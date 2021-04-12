@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="">
+	<meta name="author" content="">
+
+	<title>Graphics</title>
+
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.min.js"></script>
+
+</head>
+
+<body>
+	<div style="width: 50%;">
+		<canvas id="myChart"></canvas>
+	</div>
+	<script type="text/javascript">
+		let myChartCPUFiltro = document.getElementById('myChart').getContext('2d');
+
+
+		Chart.defaults.global.defaultFontFamily = 'Nunito', '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+		Chart.defaults.global.defaultFontColor = '#858796';
+		var presets = window.chartColors;
+		//var utils = Samples.utils;
+		//filtroCPU();
+		var massPopChartCPUFiltro = new Chart(myChartCPUFiltro, {
+			type: 'line', // bar, horizontalBar, pie, line, doughnut, radar, polarArea
+			data: {
+				labels: [1, 2, 3],
+				datasets: [{
+					label: 'grafica',
+					//
+					lineTension: 0.3,
+					backgroundColor: "rgba(78, 115, 223, 0.05)",
+					borderColor: "rgba(78, 115, 223, 1)",
+					pointRadius: 3,
+					pointBackgroundColor: "rgba(78, 115, 223, 1)",
+					pointBorderColor: "rgba(78, 115, 223, 1)",
+					pointHoverRadius: 3,
+					pointStyle: 'line',
+					pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
+					pointHoverBorderColor: "rgba(78, 115, 223, 1)",
+					pointHitRadius: 10,
+					pointBorderWidth: 2,
+					data: [1, 2, 3],
+					fill: 'start',
+					//backgroundColor: Color(presets.blue).alpha(0.5).rgbString()
+					//backgroundColor:'green',
+
+				}]
+			},
+			options: {
+				maintainAspectRatio: false,
+				layout: {
+					padding: {
+						left: 10,
+						right: 25,
+						top: 25,
+						bottom: 0
+					}
+				},
+				scales: {
+					xAxes: [{
+						time: {
+							unit: 'date'
+						},
+						gridLines: {
+							display: false,
+							drawBorder: false
+						},
+						ticks: {
+							maxTicksLimit: 7
+						}
+					}],
+					yAxes: [{
+						ticks: {
+							//maxTicksLimit: 5,
+							padding: 10,
+							//max:100,
+							min: 0
+							// Include a dollar sign in the ticks
+
+						},
+						gridLines: {
+							color: "rgb(234, 236, 244)",
+							zeroLineColor: "rgb(234, 236, 244)",
+							drawBorder: false,
+							borderDash: [2],
+							zeroLineBorderDash: [2]
+						}
+					}],
+				},
+				legend: {
+					display: false
+				},
+				tooltips: {
+					backgroundColor: "rgb(255,255,255)",
+					bodyFontColor: "#858796",
+					titleMarginBottom: 10,
+					titleFontColor: '#6e707e',
+					titleFontSize: 14,
+					borderColor: '#dddfeb',
+					borderWidth: 1,
+					xPadding: 15,
+					yPadding: 15,
+					displayColors: false,
+					intersect: false,
+					mode: 'index',
+					caretPadding: 10
+				}
+			}
+		});
+
+
+
+
+	</script>
+</body>
+
+</html>
