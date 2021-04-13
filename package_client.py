@@ -21,4 +21,5 @@ try:
     sock.send(message2) 
 
 finally:
-    sock.close()
+    print("end")
+    #sock.close()

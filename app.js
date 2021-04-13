@@ -13,12 +13,15 @@ const app = express(); //Indicamos que nuestra app funcionara bajo Express
 const main_port = process.env.MAIN_PORT;
 
 /******************************************/
-
+app.set('views', './views'); 
+app.set('view engine', 'ejs');
 
 //Se declara que la App podra extraer parametros
 app.use(bodyParser.json({limit:'100kb'})) //Formato JSON
 app.use(bodyParser.json({parameterLimit:'1000' })) //Formato JSON
 app.use(bodyParser.urlencoded({extended: true}))//Encoded
+
+ //to convert html to pdf
 //app.use(session({secret: "f156e7995d521f30e6c59a3d6c75e1e5"})); //Palabra secreta para sesiones
 //Oscar en MD5 = f156e7995d521f30e6c59a3d6c75e1e5
 /******************************************/
@@ -30,9 +33,9 @@ app.use(function(req, res, next){
     const folder = req.headers['x-request-id'];
     const url = process.env.SAMPLES_URL;
 
-    if (!folder || !fs.existsSync(url + folder))
-        res.status(404).send("Endpoint notFound");
-    else
+    // if (!folder || !fs.existsSync(url + folder))
+    //     res.status(404).send("Endpoint notFound");
+    // else
         next();
     
  });

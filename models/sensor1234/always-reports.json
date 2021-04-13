@@ -1,0 +1,22 @@
+[
+    {
+        "id": 0,
+        "description":"Current day report",
+        "show": true
+    },
+    {
+        "id": 1,
+        "description":"Current two days report",
+        "show": true
+    },
+    {
+        "id": 2,
+        "description":"Current week report",
+        "show": true
+    },
+    {
+        "id": 3,
+        "description":"Current month report",
+        "show": true
+    }
+]
