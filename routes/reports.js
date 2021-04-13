@@ -2,16 +2,54 @@ const { Router } = require("express");
 const path = require('path');
 const ejs = require('ejs');
 const fs = require("fs");
-const router = Router();
 const wkhtmltopdf = require('wkhtmltopdf');
+
+const router = Router();
 let options = { format: 'A4' };
 wkhtmltopdf.command = "C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe";
+
+
+router.get("/", (req, res) => {
+
+    const folder = req.headers['x-request-id'];
+    const url = process.env.SAMPLES_URL;
+   
+    let reports =JSON.parse( fs.readFileSync(url+folder+'/always-reports.json'))
+                     .filter(report => report.show === true);;
+
+    let nowDate = new Date(); 
+    let now = nowDate.getFullYear()+'/'+(nowDate.getMonth()+1)+'/'+nowDate.getDate();
+
+    let current_month = nowDate.getFullYear()+'/'+(nowDate.getMonth()+1)+'/01';
+    let current_year = nowDate.getFullYear()+'/01/01';
+    
+    nowDate.setDate(nowDate.getDate() - 1);
+    let twodays = nowDate.getFullYear()+'/'+(nowDate.getMonth()+1)+'/'+nowDate.getDate();
+
+    nowDate.setDate(nowDate.getDate() - 6);
+    let lastweek = nowDate.getFullYear()+'/'+(nowDate.getMonth()+1)+'/'+nowDate.getDate();   
+
+    let dates = [now,twodays,lastweek,current_month,current_year]
+    
+    res.status(200).send( 
+        reports.map( (report,index) => {
+            return{
+                initDate: dates[report.id],
+                finalDate: now,
+                reportId: report.id
+            }
+        }) 
+    );
+    
+});
 
 router.get("/:reportId", (req, res) => {
 
     const folder = req.headers['x-request-id'];
     const url = process.env.SAMPLES_URL;
 
+    const reportId = req.params.reportId;
+    
     //let htmlContent = fs.readFileSync("./models/prueba.html",'utf-8');
 
     
