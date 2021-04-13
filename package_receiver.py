@@ -18,10 +18,12 @@ while True:
     try:
         print('client connected:', client_address)
         while True:
-            data = connection.recv(8)
+            data = connection.recv(4)
             print(sys.getsizeof(data))
             pack = struct.unpack('hhhh',data)
             print(pack)
             print('received {!r}'.format(pack))            
     finally:
-        connection.close()
+        print("end")
+     #   connection.close()
+     
