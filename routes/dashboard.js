@@ -3,10 +3,12 @@ const { Router } = require("express");
 const path = require("path");
 const fs = require("fs"); 
 const router = Router();
-
    
 
 router.get("/", (req,res) => {
+    
+    let showAllData = (req.query.data) ? true : false;
+    console.log(showAllData);
     
     const folder = req.headers['x-request-id'];
     const url = process.env.SAMPLES_URL;
@@ -19,11 +21,7 @@ router.get("/", (req,res) => {
     let yesterday_samples = JSON.parse(yesterday);
 
     if (day_samples.length == 0) {
-        res.status(404).json({
-            status:404,
-            error:err || err2
-        });
-
+        res.status(404).send('Couldn\'t get response');
     }        
 
     let samples;
@@ -42,43 +40,28 @@ router.get("/", (req,res) => {
     //Reverse samples because of the frontend need
     let reverse_samples = samples.reverse();
 
-    res.status(200).json({
-        voltage: last_sample['voltaje'],
-        current: last_sample['corriente'],
-        production: (last_sample['voltaje'] * last_sample['corriente']).toFixed(2),
-        productionData: reverse_samples.map( function(sample) {
-            return {
-                date: sample['fecha'],
-                value: (sample['voltaje'] * sample['corriente']).toFixed(2)
-            }            
-         })
-    });
-            
-});
-
-router.get('/data', (req,res) => {
-    
-    const folder = req.headers['x-request-id'];
-    const url = process.env.SAMPLES_URL;
-
-    fs.readFile(url+folder+'/day.json', function(err, day) { 
-        if (err) {
-            res.status(404).json({
-                status:404,
-                error:err 
-            });
-        }
-        let day_samples = JSON.parse(day);
-        let last_sample = day_samples[day_samples.length - 1];
-
+    if(showAllData){
         res.status(200).json({
             voltage: last_sample['voltaje'],
             current: last_sample['corriente'],
             production: (last_sample['voltaje'] * last_sample['corriente']).toFixed(2),
+            productionData: reverse_samples.map( function(sample) {
+                return {
+                    date: sample['fecha'],
+                    value: (sample['voltaje'] * sample['corriente']).toFixed(2)
+                }            
+            })
         });
-    });
-
+    }else{
+        res.status(200).json({
+            voltage: last_sample['voltaje'],
+            current: last_sample['corriente'],
+            production: (last_sample['voltaje'] * last_sample['corriente']).toFixed(2)
+        });
+    }
+            
 });
+
 
 
 module.exports = router;

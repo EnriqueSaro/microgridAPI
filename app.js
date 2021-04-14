@@ -27,7 +27,17 @@ app.use(bodyParser.urlencoded({extended: true}))//Encoded
 /******************************************/
 
 /*Routing*/
+app.post('/login', function(req,res) {
+    
+    let token = req.body.token;
+    const url = process.env.SAMPLES_URL;
 
+    console.log(url + token);
+    if (!token || !fs.existsSync(url + token))
+         res.status(400).send("Endpoint notFound");
+    else
+        res.status(200).send("Acces granted");
+});
 app.use(function(req, res, next){
 
     const folder = req.headers['x-request-id'];
