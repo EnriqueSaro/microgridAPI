@@ -4,6 +4,7 @@ const ejs = require('ejs');
 const fs = require("fs");
 const pdf = require('html-pdf');
 const wkhtmltopdf = require('wkhtmltopdf');
+const { send } = require("process");
 
 const router = Router();
 let options = { format: 'A4' };
@@ -49,12 +50,42 @@ router.get("/:reportId", (req, res) => {
     const folder = req.headers['x-request-id'];
     const url = process.env.SAMPLES_URL;
 
-    const reportId = req.params.reportId;
+    const reportId = parseInt(req.params.reportId);
 
-    //let htmlContent = fs.readFileSync("./models/prueba.html",'utf-8');
+    //TODO: make validation about reportId existence
+    let production = [1, 2, 3];
+    let date_production = [1, 2, 3];
 
+    let reports;
+
+    switch (reportId) {
+        case 0:
+            reports =JSON.parse( fs.readFileSync(url+folder+'/day.json'));
+            production = reports.map( (report) => parseFloat((report.voltaje * report.corriente).toFixed(3)) );
+            date_production =  reports.map( (report) => report.fecha );
+            break;
+        case 1:
+            let yesterday_reports =JSON.parse( fs.readFileSync(url+folder+'/yesterday.json'));
+            let today_reports =JSON.parse( fs.readFileSync(url+folder+'/day.json'));
+            reports = [...yesterday_reports,...today_reports]; 
+            production = reports.map( (report) => parseFloat((report.voltaje * report.corriente).toFixed(3)) );
+            date_production =  reports.map( (report) => report.fecha );
+            break;
+        case 2:
+            break;
+        case 3:
+            break;
+        case 4:
+            break;
+        
+    }
     
-    ejs.renderFile(path.join(__dirname, '../views/', "report.ejs"), {data:options }, (err, data) => {
+    let ejs_options = {
+        logoPath: path.join('file://',__dirname,'..','public','logo2.png'),
+        y_production:production,
+        x_date:date_production
+    };
+    ejs.renderFile(path.join(__dirname, '../views/', "report.ejs"), ejs_options,null, (err, data) => {
         if (err) {
               res.send(err);
         } else {
@@ -66,19 +97,28 @@ router.get("/:reportId", (req, res) => {
                     "right": "1cm",
                     "bottom": "2cm",
                     "left": "1.5cm"
-                  },
-                                             
+                  }                                             
             };
-            pdf.create(data, options).toStream( function (err, stream) {
+            console.log(data);
+            pdf.create(data, options).toFile('./html-pdf.pdf', function (err, response) {
                 if (err) {
-                    res.send(err);
+                   console.log(err);
                 } else {
-                    res.setHeader('Content-disposition', 'attachment; filename="' + 'outoput.pdf' + '"')
-                    res.header('content-type','application/pdf');
-                    stream.pipe(res);   
-                               
+                    console.log(response);      
+                    res.send('ok');                         
                 }
             });
+
+            // pdf.create(data, options).toStream( function (err, stream) {
+            //     if (err) {
+            //         res.send(err);
+            //     } else {
+            //         res.setHeader('Content-disposition', 'attachment; filename="' + 'outoput.pdf' + '"')
+            //         res.header('content-type','application/pdf');
+            //         stream.pipe(res);   
+                               
+            //     }
+            // });
         }
     });
     // ejs.renderFile(path.join(__dirname, '../views/', "report.ejs"), {data:options }, (err, data) => {

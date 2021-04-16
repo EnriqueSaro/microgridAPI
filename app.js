@@ -16,6 +16,8 @@ const main_port = process.env.MAIN_PORT;
 app.set('views', './views'); 
 app.set('view engine', 'ejs');
 
+//se definen recursos estáticos
+app.use("/public", express.static(__dirname + "/public/"));
 //Se declara que la App podra extraer parametros
 app.use(bodyParser.json({limit:'100kb'})) //Formato JSON
 app.use(bodyParser.json({parameterLimit:'1000' })) //Formato JSON
