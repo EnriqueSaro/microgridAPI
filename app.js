@@ -61,6 +61,7 @@ app.use(function(req, res, next){
 app.use("/dashboard", require("./routes/dashboard"));
 app.use("/reports", require("./routes/reports"));
 app.use("/charts", require("./routes/charts"));
+app.use("/notifications", require("./routes/notifications"));
 
 //app.use("/users", require("./deployments/session"));
 /******************************************/

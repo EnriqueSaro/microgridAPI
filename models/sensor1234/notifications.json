@@ -1,0 +1,14 @@
+[
+    {
+        "id": 0,
+        "type":"error",
+        "date": "2021-04-19T05:00:00.000Z",
+        "description":"Voltage is 0"
+    },
+    {
+        "id": 1,
+        "type":"error",
+        "date": "2021-04-21T05:00:00.000Z",
+        "description":"Voltage is 0"
+    }
+]
