@@ -90,7 +90,7 @@ router.get("/:reportId", (req, res) => {
               res.send(err);
         } else {
             let options = {
-                "format": "Letter",
+                "format": "A4",
                 "renderDelay": 1000,
                 "border": {
                     "top": "2cm",            // default is 0, units: mm, cm, in, px
