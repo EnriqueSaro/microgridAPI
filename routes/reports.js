@@ -13,8 +13,12 @@ wkhtmltopdf.command = "C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe";
 
 router.get("/", (req, res) => {
 
-    const folder = req.headers['x-request-id'];
+    const token = req.headers['x-request-id'];
     const url = process.env.SAMPLES_URL;
+    
+    let nodes = JSON.parse(fs.readFileSync(url + '/nodes-description.json'));
+    let folder = nodes.filter(node => node.token === token)[0];
+    folder = folder.module_id;
    
     let reports =JSON.parse( fs.readFileSync(url+folder+'/always-reports.json'))
                      .filter(report => report.show === true);
@@ -47,8 +51,13 @@ router.get("/", (req, res) => {
 
 router.get("/:reportId", (req, res) => {
 
-    const folder = req.headers['x-request-id'];
+    const token = req.headers['x-request-id'];
     const url = process.env.SAMPLES_URL;
+    
+    let nodes = JSON.parse(fs.readFileSync(url + '/nodes-description.json'));
+    console.log(nodes)
+    let folder = nodes.filter(node => node.token === token)[0];
+    folder = folder.module_id;
 
     const reportId = parseInt(req.params.reportId);
 
@@ -145,9 +154,14 @@ router.get("/:reportId", (req, res) => {
 
 router.delete('/:reportId', function (req,res) {
 
-    const folder = req.headers['x-request-id'];
+    const token = req.headers['x-request-id'];
     const url = process.env.SAMPLES_URL;
     const reportId = parseInt(req.params.reportId);
+    
+    let nodes = JSON.parse(fs.readFileSync(url + '/nodes-description.json'));
+    let folder = nodes.filter(node => node.token === token)[0];
+    folder = folder.module_id;
+    
 
     //read json reports
     let reports =JSON.parse( fs.readFileSync(url+folder+'/always-reports.json'));

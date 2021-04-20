@@ -6,8 +6,12 @@ const router = Router();
 
 router.get('/days/:initDate/:finalDate', (req, res) => {
 
-    const folder = req.headers['x-request-id'];
+    const token = req.headers['x-request-id'];
     const url = process.env.SAMPLES_URL;
+    
+    let nodes = JSON.parse(fs.readFileSync(url + '/nodes-description.json'));
+    let folder = nodes.filter(node => node.token === token)[0];
+    folder = folder.module_id;
 
     let dates_length_valid = (req.params.initDate.length === 10) &&
                              (req.params.finalDate.length === 10) ? true : false;
@@ -41,8 +45,12 @@ router.get('/days/:initDate/:finalDate', (req, res) => {
 
 router.get('/months/:initDate/:finalDate', (req, res) => {
 
-    const folder = req.headers['x-request-id'];
+    const token = req.headers['x-request-id'];
     const url = process.env.SAMPLES_URL;
+    
+    let nodes = JSON.parse(fs.readFileSync(url + '/nodes-description.json'));
+    let folder = nodes.filter(node => node.token === token)[0];
+    folder = folder.module_id;
 
     let dates_length_valid = (req.params.initDate.length === 10) &&
                              (req.params.finalDate.length === 10) ? true : false;

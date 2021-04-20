@@ -10,9 +10,13 @@ router.get("/", (req,res) => {
     let showAllData = (req.query.data) ? true : false;
     console.log(showAllData);
     
-    const folder = req.headers['x-request-id'];
+    const token = req.headers['x-request-id'];
     const url = process.env.SAMPLES_URL;
     
+    let nodes = JSON.parse(fs.readFileSync(url + '/nodes-description.json'));
+    let folder = nodes.filter(node => node.token === token)[0];
+    folder = folder.module_id;
+
         // Read users.json file     
     day = fs.readFileSync(url+folder+'/day.json');
     yesterday = fs.readFileSync(url+folder+'/yesterday.json');        

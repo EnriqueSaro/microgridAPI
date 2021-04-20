@@ -34,18 +34,23 @@ app.post('/login', function(req,res) {
     let token = req.body.token;
     const url = process.env.SAMPLES_URL;
 
-    console.log(url + token);
-    if (!token || !fs.existsSync(url + token))
+    let nodes = JSON.parse(fs.readFileSync(url + '/nodes-description.json'));
+    let folder = nodes.filter(node => node.token === token);
+
+    if (!token || !fs.existsSync(url + folder[0].module_id) || folder.length ===0)
          res.status(400).send("Endpoint notFound");
     else
         res.status(200).send("Acces granted");
 });
 app.use(function(req, res, next){
 
-    const folder = req.headers['x-request-id'];
+    const token = req.headers['x-request-id'];
     const url = process.env.SAMPLES_URL;
 
-    // if (!folder || !fs.existsSync(url + folder))
+    let nodes = JSON.parse(fs.readFileSync(url + '/nodes-description.json'));
+    let folder = nodes.filter(node => node.token === token);
+
+    // if (!token || !fs.existsSync(url + folder[0].module_id) || folder.length ===0)
     //     res.status(404).send("Endpoint notFound");
     // else
         next();
