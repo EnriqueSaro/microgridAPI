@@ -10,7 +10,6 @@ const bodyParser = require("body-parser"); //Importamos la libreria Body Parser 
 const express = require("express"); //Importamos el middleware de express.js (node_modules)
 const fs = require("fs");  //Importamos file system para leer archivos
 const app = express(); //Indicamos que nuestra app funcionara bajo Express
-const main_port = process.env.MAIN_PORT;
 
 /******************************************/
 app.set('views', './views'); 
@@ -50,9 +49,9 @@ app.use(function(req, res, next){
     let nodes = JSON.parse(fs.readFileSync(url + '/nodes-description.json'));
     let folder = nodes.filter(node => node.token === token);
 
-    // if (!token || !fs.existsSync(url + folder[0].module_id) || folder.length ===0)
-    //     res.status(404).send("Endpoint notFound");
-    // else
+    if (!token || !fs.existsSync(url + folder[0].module_id) || folder.length ===0)
+        res.status(400).send("Endpoint notFound");
+    else
         next();
     
  });
@@ -66,6 +65,5 @@ app.use("/notifications", require("./routes/notifications"));
 //app.use("/users", require("./deployments/session"));
 /******************************************/
 
-/*Lanzamiento de servidor y canales*/
-
-app.listen(main_port);
+/*Exportamos servidor y canales*/
+module.exports = app;

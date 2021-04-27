@@ -4,7 +4,6 @@ const ejs = require('ejs');
 const fs = require("fs");
 const pdf = require('html-pdf');
 const wkhtmltopdf = require('wkhtmltopdf');
-const { send } = require("process");
 
 const router = Router();
 let options = { format: 'A4' };
@@ -100,6 +99,7 @@ router.get("/:reportId", (req, res) => {
         } else {
             let options = {
                 "format": "A4",
+                "paginationOffset": 1,
                 "renderDelay": 1000,
                 "border": {
                     "top": "2cm",            // default is 0, units: mm, cm, in, px
