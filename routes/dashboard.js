@@ -49,6 +49,11 @@ router.get("/", (req,res) => {
             voltage: last_sample['voltaje'],
             current: last_sample['corriente'],
             production: (last_sample['voltaje'] * last_sample['corriente']).toFixed(2),
+            aparentPower: 0,
+            activePower: 0,
+            powerFactor: 0,
+            frequency: 0,
+            quadrant: "string",
             productionData: reverse_samples.map( function(sample) {
                 return {
                     date: sample['fecha'],
@@ -60,7 +65,12 @@ router.get("/", (req,res) => {
         res.status(200).json({
             voltage: last_sample['voltaje'],
             current: last_sample['corriente'],
-            production: (last_sample['voltaje'] * last_sample['corriente']).toFixed(2)
+            production: (last_sample['voltaje'] * last_sample['corriente']).toFixed(2),
+            aparentPower: 0,
+            activePower: 0,
+            powerFactor: 0,
+            frequency: 0,
+            quadrant: "string",
         });
     }
             
