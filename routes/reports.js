@@ -65,18 +65,30 @@ router.get("/:reportId", (req, res) => {
     let date_production = [1, 2, 3];
 
     let reports;
+    let apparent_power, active_power, frequency;
 
     switch (reportId) {
         case 0:
             reports =JSON.parse( fs.readFileSync(url+folder+'/day.json'));
-            production = reports.map( (report) => parseFloat((report.voltaje * report.corriente).toFixed(3)) );
+            production = reports.map( (report) => parseFloat(report.potencia_aparente) );
+            apparent_power = (production.reduce( (sum,currentValue) => sum + currentValue) / production.length).toFixed(3);
+            active_power = (reports.map(report => report.potencia_activa)
+                                   .reduce((sum,currentValue) => sum + currentValue) / reports.length).toFixed(3);
+            frequency = (reports.map(report => report.frecuencia)
+                                .reduce((sum,currentValue) => sum + currentValue) / reports.length).toFixed(3);
             date_production =  reports.map( (report) => report.fecha );
+
             break;
         case 1:
             let yesterday_reports =JSON.parse( fs.readFileSync(url+folder+'/yesterday.json'));
             let today_reports =JSON.parse( fs.readFileSync(url+folder+'/day.json'));
             reports = [...yesterday_reports,...today_reports]; 
-            production = reports.map( (report) => parseFloat((report.voltaje * report.corriente).toFixed(3)) );
+            production = reports.map( (report) => parseFloat(report.potencia_aparente) );
+            apparent_power = (production.reduce( (sum,currentValue) => sum + currentValue) / production.length).toFixed(3);
+            active_power = (reports.map(report => report.potencia_activa)
+                                   .reduce((sum,currentValue) => sum + currentValue) / reports.length).toFixed(3);
+            frequency = (reports.map(report => report.frecuencia)
+                               .reduce((sum,currentValue) => sum + currentValue) / reports.length).toFixed(3);
             date_production =  reports.map( (report) => report.fecha );
             break;
         case 2:
@@ -91,16 +103,19 @@ router.get("/:reportId", (req, res) => {
     let ejs_options = {
         logoPath: path.join('file://',__dirname,'..','public','logo2.png'),
         y_production:production,
-        x_date:date_production
+        x_date:date_production,
+        apparent_power: apparent_power || false,
+        active_power: active_power || false,
+        frequency: frequency || false
     };
     ejs.renderFile(path.join(__dirname, '../views/', "report.ejs"), ejs_options,null, (err, data) => {
         if (err) {
               res.send(err);
         } else {
             let options = {
-                "format": "A4",
+                "format": "Letter",
                 "paginationOffset": 1,
-                "renderDelay": 1000,
+                "renderDelay": 2000,
                 "border": {
                     "top": "2cm",            // default is 0, units: mm, cm, in, px
                     "right": "1cm",
