@@ -1,4 +1,3 @@
-
 const { Router } = require("express");
 const path = require("path");
 const fs = require("fs"); 
@@ -48,16 +47,16 @@ router.get("/", (req,res) => {
         res.status(200).json({
             voltage: last_sample['voltaje'],
             current: last_sample['corriente'],
-            production: (last_sample['voltaje'] * last_sample['corriente']).toFixed(2),
-            aparentPower: 0,
-            activePower: 0,
-            powerFactor: 0,
-            frequency: 0,
+            production: parseFloat((last_sample['voltaje'] * last_sample['corriente']).toFixed(2)),
+            aparentPower: last_sample['potencia_aparente'],
+            activePower: last_sample['potencia_activa'],
+            powerFactor: last_sample['factor_potencia'],
+            frequency: last_sample['frecuencia'],
             quadrant: "string",
             productionData: reverse_samples.map( function(sample) {
                 return {
                     date: sample['fecha'],
-                    value: (sample['voltaje'] * sample['corriente']).toFixed(2)
+                    value: parseFloat((sample['voltaje'] * sample['corriente']).toFixed(2))
                 }            
             })
         });
@@ -65,11 +64,11 @@ router.get("/", (req,res) => {
         res.status(200).json({
             voltage: last_sample['voltaje'],
             current: last_sample['corriente'],
-            production: (last_sample['voltaje'] * last_sample['corriente']).toFixed(2),
-            aparentPower: 0,
-            activePower: 0,
-            powerFactor: 0,
-            frequency: 0,
+            production: parseFloat((last_sample['voltaje'] * last_sample['corriente']).toFixed(2)),
+            aparentPower: last_sample['potencia_aparente'],
+            activePower: last_sample['potencia_activa'],
+            powerFactor: last_sample['factor_potencia'],
+            frequency: last_sample['frecuencia'],
             quadrant: "string",
         });
     }
