@@ -146,26 +146,26 @@ router.get("/:reportId", (req, res) => {
                     "left": "1.5cm"
                   }                                             
             };
-            console.log(data);
-            pdf.create(data, options).toFile('./html-pdf.pdf', function (err, response) {
-                if (err) {
-                   console.log(err);
-                } else {
-                    console.log(response);      
-                    res.send('ok');                         
-                }
-            });
-
-            // pdf.create(data, options).toStream( function (err, stream) {
+            // console.log(data);
+            // pdf.create(data, options).toFile('./html-pdf.pdf', function (err, response) {
             //     if (err) {
-            //         res.send(err);
+            //        console.log(err);
             //     } else {
-            //         res.setHeader('Content-disposition', 'attachment; filename="' + 'outoput.pdf' + '"')
-            //         res.header('content-type','application/pdf');
-            //         stream.pipe(res);   
-                               
+            //         console.log(response);      
+            //         res.send('ok');                         
             //     }
             // });
+
+            pdf.create(data, options).toStream( function (err, stream) {
+                if (err) {
+                    res.send(err);
+                } else {
+                    res.setHeader('Content-disposition', 'attachment; filename="' + 'outoput.pdf' + '"')
+                    res.header('content-type','application/pdf');
+                    stream.pipe(res);   
+                               
+                }
+            });
         }
     });
     // ejs.renderFile(path.join(__dirname, '../views/', "report.ejs"), {data:options }, (err, data) => {
