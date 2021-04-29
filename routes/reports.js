@@ -61,6 +61,10 @@ router.get("/:reportId", (req, res) => {
     let date_production = [1, 2, 3];
 
     let reports;
+    let nowDate = new Date(); 
+    let now = nowDate.getFullYear()+'/'+(nowDate.getMonth()+1)+'/'+nowDate.getDate();
+
+    let period;
     let apparent_power, active_power, frequency;
 
     switch (reportId) {
@@ -73,7 +77,7 @@ router.get("/:reportId", (req, res) => {
             frequency = (reports.map(report => report.frecuencia)
                                 .reduce((sum,currentValue) => sum + currentValue) / reports.length).toFixed(3);
             date_production =  reports.map( (report) => report.fecha );
-
+            period = "del día: " + now;
             break;
         case 1:
             let yesterday_reports =JSON.parse( fs.readFileSync(url+folder+'/yesterday.json'));
@@ -86,10 +90,32 @@ router.get("/:reportId", (req, res) => {
             frequency = (reports.map(report => report.frecuencia)
                                .reduce((sum,currentValue) => sum + currentValue) / reports.length).toFixed(3);
             date_production =  reports.map( (report) => report.fecha );
+            nowDate.setDate(nowDate.getDate() - 1);
+            let yesterday = nowDate.getFullYear()+'/'+(nowDate.getMonth()+1)+'/'+nowDate.getDate();
+            period = "de los días: " + yesterday + " y " + now;
             break;
         case 2:
+            let month_reports =JSON.parse( fs.readFileSync(url+folder+'/month.json'));
+            nowDate.setDate(nowDate.getDate() - 7);
+            nowDate.setHours(0,0,0,0);
+
+            reports = month_reports.filter( (report) => new Date(report.fecha) >= nowDate);
+            production = reports.map((report) => report.produccion );
+            apparent_power = (production.reduce((sum,currentValue) => sum + currentValue)).toFixed(3);
+            date_production =  reports.map( (report) => report.fecha );
+            
+            let lastweek = nowDate.getFullYear()+'/'+(nowDate.getMonth()+1)+'/'+nowDate.getDate();
+            period = "de la semana: " + lastweek + " a " + now;
             break;
         case 3:
+            reports =JSON.parse( fs.readFileSync(url+folder+'/month.json'));
+            production = reports.map((report) => report.produccion );
+            apparent_power = (production.reduce((sum,currentValue) => sum + currentValue)).toFixed(3);
+            date_production =  reports.map( (report) => report.fecha );
+
+            let month = nowDate.getFullYear()+'/'+(nowDate.getMonth()+1)+'/01';
+            period = "del mes: " + month + " a " + now;
+
             break;
         case 4:
             break;
@@ -98,8 +124,9 @@ router.get("/:reportId", (req, res) => {
     
     let ejs_options = {
         logoPath: path.join('file://',__dirname,'..','public','logo2.png'),
-        y_production:production,
-        x_date:date_production,
+        y_production: production,
+        x_date: date_production,
+        period: period,
         apparent_power: apparent_power || false,
         active_power: active_power || false,
         frequency: frequency || false
@@ -119,26 +146,26 @@ router.get("/:reportId", (req, res) => {
                     "left": "1.5cm"
                   }                                             
             };
-            // console.log(data);
-            // pdf.create(data, options).toFile('./html-pdf.pdf', function (err, response) {
-            //     if (err) {
-            //        console.log(err);
-            //     } else {
-            //         console.log(response);      
-            //         res.send('ok');                         
-            //     }
-            // });
-
-            pdf.create(data, options).toStream( function (err, stream) {
+            console.log(data);
+            pdf.create(data, options).toFile('./html-pdf.pdf', function (err, response) {
                 if (err) {
-                    res.send(err);
+                   console.log(err);
                 } else {
-                    res.setHeader('Content-disposition', 'attachment; filename="' + 'outoput.pdf' + '"')
-                    res.header('content-type','application/pdf');
-                    stream.pipe(res);   
-                               
+                    console.log(response);      
+                    res.send('ok');                         
                 }
             });
+
+            // pdf.create(data, options).toStream( function (err, stream) {
+            //     if (err) {
+            //         res.send(err);
+            //     } else {
+            //         res.setHeader('Content-disposition', 'attachment; filename="' + 'outoput.pdf' + '"')
+            //         res.header('content-type','application/pdf');
+            //         stream.pipe(res);   
+                               
+            //     }
+            // });
         }
     });
     // ejs.renderFile(path.join(__dirname, '../views/', "report.ejs"), {data:options }, (err, data) => {
