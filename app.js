@@ -36,10 +36,10 @@ app.post('/login', function(req,res) {
     let nodes = JSON.parse(fs.readFileSync(url + '/nodes-description.json'));
     let folder = nodes.filter(node => node.token === token);
 
-    if (!token || !fs.existsSync(url + folder[0].module_id) || folder.length ===0)
-         res.status(400).send("Endpoint notFound");
+    if (!token ||  folder.length ===0 || !fs.existsSync(url + folder[0].module_id) )
+        res.status(200).json({ accept: false });
     else
-        res.status(200).send("Acces granted");
+        res.status(200).json({ accept: true });
 });
 app.use(function(req, res, next){
 
@@ -49,7 +49,7 @@ app.use(function(req, res, next){
     let nodes = JSON.parse(fs.readFileSync(url + '/nodes-description.json'));
     let folder = nodes.filter(node => node.token === token);
 
-    if (!token || !fs.existsSync(url + folder[0].module_id) || folder.length ===0)
+    if (!token || folder.length ===0 || !fs.existsSync(url + folder[0].module_id) )
         res.status(400).send("Endpoint notFound");
     else
         next();

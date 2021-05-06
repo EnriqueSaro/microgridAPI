@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
 
 <style>
-  .reportGraph {width:1000px}
+  .reportGraph {width:1050px}
   .container2 {
     width: 970px !important;
 }
@@ -250,73 +250,123 @@ body.mobile-nav-active #mobile-nav {
     <!-- Area Chart -->
     Prueba de generación de PDF con gráficas de microGrid
     <!-- Area Chart -->
-    <div class="reportGraph">
+    <!-- <div class="reportGraph">
       <div class="card shadow mb-4">
         <!-- Card Header - Dropdown -->
-        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <!-- <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
           <h6 class="m-0 font-weight-bold text-primary">Historial de producción</h6>
-        </div>
+        </div> --> -->
         <!-- Card Body -->
-        <div class="card-body">
-          <div class="chart-area" style="height: 480px;">
+        <!-- <div class="card-body"> -->
+          <div class="reportGraph">
             <canvas id="myChart"></canvas>
           </div>
-        </div>
-      </div>
-    </div>
+        <!-- </div> -->
+      <!-- </div>
+    </div> -->
   
   
     <h4>Promedio de parámetros de la microrred eléctrica del periodo correspondiente <%= period %> : </h4>
     <br>
-  
-    <!-- <div class="reportGraph"><canvas id="myChart"></canvas></div>-->
     <div class="reportGraph">
       <div class="card shadow mb-12">
         <!-- Earnings (Monthly) Card Example -->
-        <div class="card border-left-primary shadow h-100 py-2 pull-left" style="width: 300px;">
-          <div class="card-body">
-            <div class="row no-gutters align-items-center">
-              <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                Potencia aparente</div>
-              <div class="pull-right">
-                <i class="fad fa-battery-bolt fa-2x " style="color: #f6c23e;"></i>
+        <% if (voltage) { %>
+          <div class="card border-left-primary shadow h-100 py-2 pull-left" style="width: 300px;">
+            <div class="card-body">
+              <div class="row no-gutters align-items-center">
+                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                  Voltaje</div>
+                <div class="pull-right">
+                  <i class="fad fa-battery-bolt fa-2x " style="color: #f6c23e;"></i>
+                </div>
+                <br>
+                <div class="h5 mb-0 font-weight-bold text-gray-800"><%= voltage %> V</div>
               </div>
-              <br>
-              <div class="h5 mb-0 font-weight-bold text-gray-800"><%= apparent_power %> KVA / H</div>
             </div>
           </div>
-        </div>
-    
-        <div class="card border-left-success shadow h-100 py-2 pull-right" style="width: 300px;">
-          <div class="card-body">
-            <div class="row no-gutters align-items-center">
-              <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                Potencia activa</div>
-              <div class="pull-right">
-                <i class="fad fa-battery-bolt fa-2x text-gray-300"></i>
+        <% } %>
+        <% if (voltage) { %>
+          <div class="card border-left-success shadow h-100 py-2 pull-right" style="width: 300px;">
+            <div class="card-body">
+              <div class="row no-gutters align-items-center">
+                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                  Corriente</div>
+                <div class="pull-right">
+                  <i class="fad fa-battery-bolt fa-2x text-gray-300"></i>
+                </div>
+                <br>
+                <div class="h5 mb-0 font-weight-bold text-gray-800"> <%= current %>  A </div>
               </div>
-              <br>
-              <div class="h5 mb-0 font-weight-bold text-gray-800"> <%= active_power %>  KVA / H </div>
             </div>
           </div>
-        </div>
+        <% } %>
         <!-- Earnings (Monthly) Card Example -->
         <div class="card border-left-warning shadow h-100 py-2  mx-auto" style="width: 300px;">
           <div class="card-body">
             <div class="row no-gutters align-items-center">
               <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                Frecuencia</div>
+                Producción total</div>
               <div class="pull-right">
                 <i class="fas fa-wave-sine  fa-2x text-gray-300"></i>
               </div>
               <br>
-              <div class="h5 mb-0 font-weight-bold text-gray-800"> <%= frequency %> Hz</div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800"> <%= production_sum %> KVA / H</div>
             </div>
           </div>
         </div>
     
-      </div>
+      </div>    
     </div>
+    <% if (apparent_power) { %>
+      <div class="reportGraph">
+        <div class="card shadow mb-12">
+          <!-- Earnings (Monthly) Card Example -->
+          <div class="card border-left-primary shadow h-100 py-2 pull-left" style="width: 300px;">
+            <div class="card-body">
+              <div class="row no-gutters align-items-center">
+                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                  Potencia aparente</div>
+                <div class="pull-right">
+                  <i class="fad fa-battery-bolt fa-2x " style="color: #f6c23e;"></i>
+                </div>
+                <br>
+                <div class="h5 mb-0 font-weight-bold text-gray-800"><%= apparent_power %> KVA / H</div>
+              </div>
+            </div>
+          </div>
+      
+          <div class="card border-left-success shadow h-100 py-2 pull-right" style="width: 300px;">
+            <div class="card-body">
+              <div class="row no-gutters align-items-center">
+                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                  Potencia activa</div>
+                <div class="pull-right">
+                  <i class="fad fa-battery-bolt fa-2x text-gray-300"></i>
+                </div>
+                <br>
+                <div class="h5 mb-0 font-weight-bold text-gray-800"> <%= active_power %>  KVA / H </div>
+              </div>
+            </div>
+          </div>
+          <!-- Earnings (Monthly) Card Example -->
+          <div class="card border-left-warning shadow h-100 py-2  mx-auto" style="width: 300px;">
+            <div class="card-body">
+              <div class="row no-gutters align-items-center">
+                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                  Frecuencia</div>
+                <div class="pull-right">
+                  <i class="fas fa-wave-sine  fa-2x text-gray-300"></i>
+                </div>
+                <br>
+                <div class="h5 mb-0 font-weight-bold text-gray-800"> <%= frequency %> Hz</div>
+              </div>
+            </div>
+          </div>
+      
+        </div>    
+      </div>
+    <% } %>
 
   </div>
     <script type="text/javascript">
@@ -345,7 +395,7 @@ body.mobile-nav-active #mobile-nav {
 				datasets: [{
 					label: 'Producción de energía',
 					//
-					lineTension: 0.3,
+					lineTension: 0.1,
 				  //backgroundColor: "rgba(78, 115, 223, 0.05)",
           backgroundColor: "rgba(54, 162, 235,0.2)",
 					//borderColor: "rgba(78, 115, 223, 1)",
