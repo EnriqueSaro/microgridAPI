@@ -1,8 +1,7 @@
 const { Router } = require("express");
 const path = require('path');
-const ejs = require('ejs');
 const fs = require("fs");
-const pdf = require('html-pdf');
+const utils = require('./utils');
 const router = Router();
 
 
@@ -110,7 +109,6 @@ router.get("/:reportId", (req, res) => {
 
             reports = month_reports.filter( (report) => new Date(report.fecha) >= nowDate);
             production = reports.map((report) => report.produccion );
-            //apparent_power = (production.reduce((sum,currentValue) => sum + currentValue)).toFixed(3);
             date_production =  reports.map( (report) => new Date(report.fecha).toLocaleString() );
             
             let lastweek = nowDate.getFullYear()+'/'+(nowDate.getMonth()+1)+'/'+nowDate.getDate();
@@ -119,7 +117,6 @@ router.get("/:reportId", (req, res) => {
         case 3:
             reports =JSON.parse( fs.readFileSync(url+folder+'/month.json'));
             production = reports.map((report) => report.produccion );
-            //apparent_power = (production.reduce((sum,currentValue) => sum + currentValue)).toFixed(3);
             date_production =  reports.map( (report) => new Date(report.fecha).toLocaleString() );
 
             let month = nowDate.getFullYear()+'/'+(nowDate.getMonth()+1)+'/01';
@@ -142,63 +139,9 @@ router.get("/:reportId", (req, res) => {
         apparent_power: apparent_power || false,
         active_power: active_power || false,
         frequency: frequency || false
-    };
-    ejs.renderFile(path.join(__dirname, '../views/', "report.ejs"), ejs_options,null, (err, data) => {
-        if (err) {
-              res.send(err);
-        } else {
-            let options = {
-                "format": "Letter",
-                "paginationOffset": 1,
-                "renderDelay": 2000,
-               // "orientation": "landscape",
-                "border": {
-                    "top": "2cm",            // default is 0, units: mm, cm, in, px
-                    "right": "1cm",
-                    "bottom": "2cm",
-                    "left": "1.5cm"
-                  }                                             
-            };
-            console.log(data);
-            pdf.create(data, options).toFile('./html-pdf.pdf', function (err, response) {
-                if (err) {
-                   console.log(err);
-                } else {
-                    console.log(response);      
-                    res.send('ok');                         
-                }
-            });
+    };   
 
-            // pdf.create(data, options).toStream( function (err, stream) {
-            //     if (err) {
-            //         res.send(err);
-            //     } else {
-            //         res.setHeader('Content-disposition', 'attachment; filename="' + 'outoput.pdf' + '"')
-            //         res.header('content-type','application/pdf');
-            //         stream.pipe(res);   
-                               
-            //     }
-            // });
-        }
-    });
-    // ejs.renderFile(path.join(__dirname, '../views/', "report.ejs"), {data:options }, (err, data) => {
-    //     if (err) {
-    //           res.send(err);
-    //     } else {
-    //         let options = {
-    //             "height": "11.25in",
-    //             "width": "8.5in"                
-    //         };
-    //         res.setHeader('Content-disposition', 'attachment; filename="' + 'outoput.pdf' + '"')
-    //         res.header('content-type','application/pdf');
-    //         //use wkhtmltopdf to create pdf
-    //         wkhtmltopdf(data, {
-    //             pageSize: 'letter'
-    //         }).pipe(res);
-    //     }
-    // });
-    
-    
+    utils.create_pdf_report(ejs_options,res);
 
 });
 
