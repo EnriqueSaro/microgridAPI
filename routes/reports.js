@@ -18,18 +18,24 @@ router.get("/", (req, res) => {
                      .filter(report => report.show === true);
 
     let nowDate = new Date(); 
-    let now = nowDate.getFullYear()+'/'+(nowDate.getMonth()+1)+'/'+nowDate.getDate();
-
-    let current_month = nowDate.getFullYear()+'/'+(nowDate.getMonth()+1)+'/01';
-    let current_year = nowDate.getFullYear()+'/01/01';
+    let now = nowDate.getFullYear()+'/'+(nowDate.getMonth()+1)+'/'+nowDate.getDate();    
     
     nowDate.setDate(nowDate.getDate() - 1);
     let twodays = nowDate.getFullYear()+'/'+(nowDate.getMonth()+1)+'/'+nowDate.getDate();
 
     nowDate.setDate(nowDate.getDate() - 6);
-    let lastweek = nowDate.getFullYear()+'/'+(nowDate.getMonth()+1)+'/'+nowDate.getDate();   
+    let lastweek = nowDate.getFullYear()+'/'+(nowDate.getMonth()+1)+'/'+nowDate.getDate(); 
+    
+    nowDate.setDate(nowDate.getDate() - 24);
+    let current_month = nowDate.getFullYear()+'/'+(nowDate.getMonth()+1)+'/'+nowDate.getDate();
 
-    let dates = [now,twodays,lastweek,current_month,current_year]
+    nowDate.setDate(nowDate.getDate() - 334);
+    let current_year = nowDate.getFullYear()+'/'+(nowDate.getMonth()+1)+'/'+nowDate.getDate();
+
+    nowDate.setFullYear(nowDate.getFullYear() - 9);
+    let current_decade = nowDate.getFullYear()+'/01/01';
+
+    let dates = [now,twodays,lastweek,current_month,current_year,current_decade];
     
     res.status(200).send( 
         reports.map( (report,index) => {
@@ -109,7 +115,7 @@ router.get("/:reportId", (req, res) => {
 
             reports = month_reports.filter( (report) => new Date(report.fecha) >= nowDate);
             production = reports.map((report) => report.produccion );
-            date_production =  reports.map( (report) => new Date(report.fecha).toLocaleString() );
+            date_production =  reports.map( (report) => new Date(report.fecha).toLocaleDateString() );
             
             let lastweek = nowDate.getFullYear()+'/'+(nowDate.getMonth()+1)+'/'+nowDate.getDate();
             period = "de la semana: " + lastweek + " a " + now;
@@ -117,15 +123,32 @@ router.get("/:reportId", (req, res) => {
         case 3:
             reports =JSON.parse( fs.readFileSync(url+folder+'/month.json'));
             production = reports.map((report) => report.produccion );
-            date_production =  reports.map( (report) => new Date(report.fecha).toLocaleString() );
+            date_production =  reports.map( (report) => new Date(report.fecha).toLocaleDateString() );
 
-            let month = nowDate.getFullYear()+'/'+(nowDate.getMonth()+1)+'/01';
-            period = "del mes: " + month + " a " + now;
-
+            let begin_day = new Date(reports[0].fecha);
+            let day = begin_day.getFullYear()+'/'+(begin_day.getMonth()+1)+'/' + begin_day.getDate();
+            period = "del mes: " + day + " a " + now;
             break;
         case 4:
-            break;
-        
+            reports =JSON.parse( fs.readFileSync(url+folder+'/year.json'));
+            production = reports.map((report) => report.produccion );
+            date_production =  reports.map( (report) => new Date(report.fecha).toLocaleDateString() );
+
+            let begin_moth = new Date(reports[0].fecha);
+            let month = begin_moth.getFullYear()+'/'+(begin_moth.getMonth()+1)+'/01';
+            period = "del año: " + month + " a " + now;
+            break; 
+        case 5:
+            reports =JSON.parse( fs.readFileSync(url+folder+'/decada.json'));
+            production = reports.map((report) => report.produccion );
+            date_production =  reports.map( (report) => new Date(report.fecha).toLocaleDateString() );
+
+            let begin_year = new Date(reports[0].fecha);
+            let final_year = new Date(reports[reports.length -1].fecha);
+            let year = begin_year.getFullYear()+'/01/01';
+            let end_year = final_year.getFullYear()+'/01/01';
+            period = "del año: " + year + " a " + end_year;
+            break;        
     }
     
     let ejs_options = {
@@ -145,6 +168,65 @@ router.get("/:reportId", (req, res) => {
 
 });
 
+router.get("/json/:reportId", (req, res) => {
+
+    const token = req.headers['x-request-id'];
+    const url = process.env.SAMPLES_URL;
+    const reportId = parseInt(req.params.reportId);
+    
+    let nodes = JSON.parse(fs.readFileSync(url + '/nodes-description.json'));
+    let folder = nodes.find(node => node.token === token);
+    folder = folder.module_id;
+    
+
+    //read json reports
+    let reports =JSON.parse( fs.readFileSync(url+folder+'/always-reports.json'));
+    let id_exists = reports.find(report => report.id === reportId);
+    
+    if( id_exists ){
+        let nowDate = new Date();
+        let json , tittle;
+        switch( reportId ){
+            case 0:
+                json = JSON.parse( fs.readFileSync(url+folder+'/day.json'));
+                tittle = 'day.json';
+                break;
+            case 1:
+                let day = JSON.parse( fs.readFileSync(url+folder+'/day.json'));
+                let yesterday = JSON.parse( fs.readFileSync(url+folder+'/yesterday.json'));
+                json = [...yesterday,...day];
+                tittle = 'day-yes.json';
+                break;
+            case 2:
+                let month_reports = JSON.parse( fs.readFileSync(url+folder+'/month.json'));
+                nowDate.setDate(nowDate.getDate() - 7);
+                nowDate.setHours(0,0,0,0);
+
+                json = month_reports.filter( (report) => new Date(report.fecha) >= nowDate);
+                tittle = 'week.json';
+                break;
+            case 3:
+                json = JSON.parse( fs.readFileSync(url+folder+'/month.json'));
+                tittle = 'month.json';
+                break;
+            case 4:
+                json = JSON.parse( fs.readFileSync(url+folder+'/year.json'));
+                tittle = 'year.json';
+                break;
+            case 5:
+                json =  JSON.parse( fs.readFileSync(url+folder+'/decada.json'));
+                tittle = 'decade.json';
+                break;
+        }
+
+        res.setHeader('Content-disposition', 'attachment; filename="' + tittle + '"')
+        res.header('content-type','application/json');
+        res.status(200).send(JSON.stringify(json));
+    }else{
+        res.status(404).send('ReportId not found');
+    }
+
+});
 
 router.delete('/:reportId', function (req,res) {
 
