@@ -30,16 +30,31 @@ app.use(bodyParser.urlencoded({extended: true}))//Encoded
 /*Routing*/
 app.post('/login', function(req,res) {
     
-    let token = req.body.token;
+    let token = req.body.password;
+    let device_token = req.body.token;
+
     const url = process.env.SAMPLES_URL;
 
     let nodes = JSON.parse(fs.readFileSync(url + '/nodes-description.json'));
     let folder = nodes.filter(node => node.token === token);
 
-    if (!token ||  folder.length ===0 || !fs.existsSync(url + folder[0].module_id) )
+    if (!token ||  folder.length ===0 || !fs.existsSync(url + folder[0].module_id) ){
         res.status(200).json({ accept: false });
-    else
+    }else{
+        let devices = JSON.parse(fs.readFileSync(url + '/devices.json'));
+        let device_index = devices.findIndex( device => device.token === device_token);
+
+        if(device_index > -1){
+            devices[device_index].module_id = folder;
+        }else{
+            devices.push({
+                token: device_token,
+                module_id: folder
+            });
+        }
+        fs.writeFileSync(url  +'/devices.json', JSON.stringify(devices, null, '\t'));
         res.status(200).json({ accept: true });
+    }        
 });
 app.use(function(req, res, next){
 

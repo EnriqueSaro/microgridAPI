@@ -13,17 +13,13 @@ router.get('/days/:initDate/:finalDate', (req, res) => {
     let folder = nodes.filter(node => node.token === token)[0];
     folder = folder.module_id;
 
-    let dates_length_valid = (req.params.initDate.length === 10) &&
-                             (req.params.finalDate.length === 10) ? true : false;
-
-    //adding T00:00:00 to retrieve localtime
-    const initDate = new Date(req.params.initDate + 'T05:00:00.000Z');
-    const finalDate = new Date(req.params.finalDate + 'T05:00:00.000Z');
+    const initDate = new Date(req.params.initDate);
+    const finalDate = new Date(req.params.finalDate);
 
     let dates_valid = initDate instanceof Date && !isNaN(initDate) &&
         finalDate instanceof Date && !isNaN(finalDate);
 
-    if (dates_length_valid && dates_valid) {
+    if ( dates_valid ) {
 
         let reports = JSON.parse(fs.readFileSync(url + folder + '/month.json'));
         let filtered_reports = reports.filter((sample) => {
@@ -35,7 +31,14 @@ router.get('/days/:initDate/:finalDate', (req, res) => {
         if( filtered_reports.length === 0){
             res.status(404).send("Coudn't find any sample with proportioned dates")
         }else{
-            res.status(200).json(filtered_reports);
+            res.status(200).json(
+                filtered_reports.map( report => {
+                    return {
+                        date: report.fecha,
+                        production: report.produccion
+                    }
+                })
+            );
         }
 
     } else {
@@ -52,17 +55,13 @@ router.get('/months/:initDate/:finalDate', (req, res) => {
     let folder = nodes.filter(node => node.token === token)[0];
     folder = folder.module_id;
 
-    let dates_length_valid = (req.params.initDate.length === 10) &&
-                             (req.params.finalDate.length === 10) ? true : false;
-
-    //adding T00:00:00 to retrieve localtime
-    const initDate = new Date(req.params.initDate + 'T05:00:00.000Z');
-    const finalDate = new Date(req.params.finalDate + 'T05:00:00.000Z');
+    const initDate = new Date(req.params.initDate);
+    const finalDate = new Date(req.params.finalDate);
 
     let dates_valid = initDate instanceof Date && !isNaN(initDate) &&
                       finalDate instanceof Date && !isNaN(finalDate);
 
-    if (dates_length_valid && dates_valid) {
+    if ( dates_valid ) {
 
         let init_month = initDate.getMonth();
         let final_month = finalDate.getMonth();
@@ -76,11 +75,18 @@ router.get('/months/:initDate/:finalDate', (req, res) => {
         if( filtered_reports.length === 0){
             res.status(404).send("Coudn't find any sample with proportioned dates")
         }else{
-            res.status(200).json(filtered_reports);
+            res.status(200).json(
+                filtered_reports.map( report => {
+                    return {
+                        date: report.fecha,
+                        production: report.produccion
+                    }
+                })
+            );
         }
 
     } else {
-        res.status(400).send('Bad format, please provide dates in format YYYY-MM-DD')
+        res.status(400).send('Bad format, please provide dates in format YYYY-MM-DDTHH:MM:SS.SSZ')
     }
 });
 module.exports = router;

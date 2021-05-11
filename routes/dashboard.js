@@ -47,12 +47,12 @@ router.get("/", (req,res) => {
         res.status(200).json({
             voltage: last_sample['voltaje'],
             current: last_sample['corriente'],
-            production: parseFloat((last_sample['potencia_aparente'] * 60 / 1000).toFixed(2)),
+            production: parseFloat((last_sample['potencia_aparente'] * 60 / 1000).toFixed(3)),
             aparentPower: last_sample['potencia_aparente'],
             activePower: last_sample['potencia_activa'],
             powerFactor: last_sample['factor_potencia'],
             frequency: last_sample['frecuencia'],
-            quadrant: "string",
+            quadrant: last_sample['cudrante'],
             productionData: reverse_samples.map( function(sample) {
                 return {
                     date: sample['fecha'],
@@ -64,12 +64,12 @@ router.get("/", (req,res) => {
         res.status(200).json({
             voltage: last_sample['voltaje'],
             current: last_sample['corriente'],
-            production: parseFloat((sample['potencia_aparente'] * 60 / 1000).toFixed(2)),
+            production: parseFloat((last_sample['potencia_aparente'] * 60 / 1000).toFixed(2)),
             aparentPower: last_sample['potencia_aparente'],
             activePower: last_sample['potencia_activa'],
             powerFactor: last_sample['factor_potencia'],
             frequency: last_sample['frecuencia'],
-            quadrant: "string",
+            quadrant: last_sample['cudrante'],
         });
     }
             

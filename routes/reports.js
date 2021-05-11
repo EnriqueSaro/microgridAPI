@@ -110,7 +110,7 @@ router.get("/:reportId", (req, res) => {
 
             reports = month_reports.filter( (report) => new Date(report.fecha) >= nowDate);
             production = reports.map((report) => report.produccion );
-            apparent_power = (production.reduce((sum,currentValue) => sum + currentValue)).toFixed(3);
+            //apparent_power = (production.reduce((sum,currentValue) => sum + currentValue)).toFixed(3);
             date_production =  reports.map( (report) => new Date(report.fecha).toLocaleString() );
             
             let lastweek = nowDate.getFullYear()+'/'+(nowDate.getMonth()+1)+'/'+nowDate.getDate();
@@ -119,7 +119,7 @@ router.get("/:reportId", (req, res) => {
         case 3:
             reports =JSON.parse( fs.readFileSync(url+folder+'/month.json'));
             production = reports.map((report) => report.produccion );
-            apparent_power = (production.reduce((sum,currentValue) => sum + currentValue)).toFixed(3);
+            //apparent_power = (production.reduce((sum,currentValue) => sum + currentValue)).toFixed(3);
             date_production =  reports.map( (report) => new Date(report.fecha).toLocaleString() );
 
             let month = nowDate.getFullYear()+'/'+(nowDate.getMonth()+1)+'/01';
