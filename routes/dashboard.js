@@ -26,15 +26,16 @@ router.get("/", (req,res) => {
     if ( ranges.length === 0){
         samples = all_samples;
     }else{
+        //Filter samples that are not in ranges
         samples = all_samples.filter( sample => {
             let sample_hour = new Date(sample.fecha).getHours();
             let is_in_range =  true;
             for (let range of ranges) {
                 is_in_range &= (range.init < range.final) ?
-                    ( range.init <= sample_hour && sample_hour <= range.final) :
-                    ( range.init <= sample_hour || sample_hour <= range.final)
+                    ( range.init <= sample_hour && sample_hour <= range.final - 1) :
+                    ( range.init <= sample_hour || sample_hour <= range.final - 1)
             }
-            return is_in_range;
+            return !is_in_range;
         });
     }
     console.log('inicio: ' + samples.length);
