@@ -30,15 +30,15 @@ app.use(bodyParser.urlencoded({extended: true}))//Encoded
 /*Routing*/
 app.post('/login', function(req,res) {
     
-    let token = req.body.password;
-    let device_token = req.body.token;
+    const token = req.body.password;
+    const device_token = req.body.token;
 
     const url = process.env.SAMPLES_URL;
 
     let nodes = JSON.parse(fs.readFileSync(url + '/nodes-description.json'));
     let folder = nodes.filter(node => node.token === token);
 
-    if (!token ||  folder.length ===0 || !fs.existsSync(url + folder[0].module_id) ){
+    if (!token ||  folder.length === 0 || !fs.existsSync(url + folder[0].module_id) ){
         res.status(200).json({ accept: false });
     }else{
         let devices = JSON.parse(fs.readFileSync(url + '/devices.json'));
@@ -75,6 +75,7 @@ app.use(function(req, res, next){
 app.use("/dashboard", require("./routes/dashboard"));
 app.use("/reports", require("./routes/reports"));
 app.use("/charts", require("./routes/charts"));
+app.use("/settings", require("./routes/settings"));
 app.use("/notifications", require("./routes/notifications"));
 
 //app.use("/users", require("./deployments/session"));

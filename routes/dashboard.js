@@ -45,30 +45,30 @@ router.get("/", (req,res) => {
 
     if(showAllData){
         res.status(200).json({
-            voltage: last_sample['voltaje'],
-            current: last_sample['corriente'],
+            voltage:  parseFloat(last_sample['voltaje'].toFixed(3)),
+            current:  parseFloat(last_sample['corriente'].toFixed(3)),
             production: parseFloat((last_sample['potencia_aparente'] * 60 / 1000).toFixed(3)),
-            aparentPower: last_sample['potencia_aparente'],
-            activePower: last_sample['potencia_activa'],
-            powerFactor: last_sample['factor_potencia'],
-            frequency: last_sample['frecuencia'],
+            aparentPower:  parseFloat(last_sample['potencia_aparente'].toFixed(3)),
+            activePower:  parseFloat(last_sample['potencia_activa'].toFixed(3)),
+            powerFactor:  parseFloat(last_sample['factor_potencia'].toFixed(3)),
+            frequency:  parseFloat(last_sample['frecuencia'].toFixed(3)),
             quadrant: last_sample['cudrante'],
             productionData: reverse_samples.map( function(sample) {
                 return {
                     date: sample['fecha'],
-                    value: parseFloat((sample['potencia_aparente'] * 60 / 1000).toFixed(2))
+                    value: parseFloat((sample['potencia_aparente'] / 60000).toFixed(2))
                 }            
             })
         });
     }else{
         res.status(200).json({
-            voltage: last_sample['voltaje'],
-            current: last_sample['corriente'],
-            production: parseFloat((last_sample['potencia_aparente'] * 60 / 1000).toFixed(2)),
-            aparentPower: last_sample['potencia_aparente'],
-            activePower: last_sample['potencia_activa'],
-            powerFactor: last_sample['factor_potencia'],
-            frequency: last_sample['frecuencia'],
+            voltage:  parseFloat(last_sample['voltaje'].toFixed(3)),
+            current:  parseFloat(last_sample['corriente'].toFixed(3)),
+            production: parseFloat((last_sample['potencia_aparente']  / 60000).toFixed(2)),
+            aparentPower:  parseFloat(last_sample['potencia_aparente'].toFixed(3)),
+            activePower:  parseFloat(last_sample['potencia_activa'].toFixed(3)),
+            powerFactor:  parseFloat(last_sample['factor_potencia'].toFixed(3)),
+            frequency:  parseFloat(last_sample['frecuencia'].toFixed(3)),
             quadrant: last_sample['cudrante'],
         });
     }

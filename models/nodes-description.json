@@ -1,7 +1,19 @@
 [
-    {
-        "module_id": "sensor1234",
-        "description": "Module from location A",
-        "token": "c2Vuc29yMTIzNA=="
-    }
+	{
+		"module_id": "sensor1234",
+		"description": "Module from location A",
+		"token": "c2Vuc29yMTIzNA==",
+		"ranges": [
+			{
+				"idRange": 0,
+				"init": 21,
+				"final": 6
+			},
+			{
+				"idRange": 1,
+				"init": 21,
+				"final": 7
+			}
+		]
+	}
 ]

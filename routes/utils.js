@@ -34,7 +34,7 @@ const create_pdf_report = (ejs_options, res) => {
                 if (err) {
                     res.send(err);
                 } else {
-                    res.setHeader('Content-disposition', 'attachment; filename="' + 'outoput.pdf' + '"')
+                    res.setHeader('Content-disposition', 'attachment; filename="outoput.pdf"');
                     res.header('content-type','application/pdf');
                     stream.pipe(res);                                          
                 }

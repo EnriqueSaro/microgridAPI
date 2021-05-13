@@ -25,7 +25,7 @@ router.get('/days/:initDate/:finalDate', (req, res) => {
 
         let reports = JSON.parse(fs.readFileSync(url + folder + '/month.json'));
         let filtered_reports = reports.filter((sample) => {
-            let date = new Date(sample.date);
+            let date = new Date(sample.fecha);
             date.setHours(0, 0, 0, 0);
             return initDate <= date && finalDate >= date;
         });
@@ -70,7 +70,7 @@ router.get('/months/:initDate/:finalDate', (req, res) => {
 
         let reports = JSON.parse(fs.readFileSync(url + folder + '/year.json'));
         let filtered_reports = reports.filter((sample) => {
-            let sample_month = new Date(sample.date).getMonth();
+            let sample_month = new Date(sample.fecha).getMonth();
             return init_month <= sample_month && final_month >= sample_month;
         });
 
@@ -104,7 +104,7 @@ router.get('/days/download/:initDate/:finalDate', (req, res) => {
 
     const initDate = new Date(req.params.initDate);
     const finalDate = new Date(req.params.finalDate);
-
+    finalDate.setHours(0,0,0,0);
     let dates_valid = initDate instanceof Date && !isNaN(initDate) &&
         finalDate instanceof Date && !isNaN(finalDate);
 
