@@ -125,10 +125,12 @@ router.get('/days/download/:initDate/:finalDate', (req, res) => {
             
             let init = initDate.toLocaleDateString();
             let final = finalDate.toLocaleDateString();
-            let period = "de los días : " + init + " a " + final;
+            let period = "de intervalo  de días."
+            let interval = init + " a " + final;
 
             let ejs_options = {
                 logoPath: path.join('file://',__dirname,'..','public','logo2.png'),
+                logoQR: path.join('file://',__dirname,'..','public','SmartGrid.png'),
                 y_production: production,
                 x_date: date_production,
                 production_sum: (production.reduce( (sum, currentValue) => sum + currentValue)).toFixed(3),
@@ -137,7 +139,9 @@ router.get('/days/download/:initDate/:finalDate', (req, res) => {
                 current: false,
                 apparent_power: false,
                 active_power: false,
-                frequency: false
+                frequency: false,
+                module: folder,
+                interval: interval
             };
 
             utils.create_pdf_report(ejs_options,res);           
@@ -186,11 +190,13 @@ router.get('/months/download/:initDate/:finalDate', (req, res) => {
             const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
                                 "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
             
-            let period = "de los meses : " + monthNames[initDate.getMonth()]+ " del " + initDate.getFullYear()
-                         + "a " + monthNames[finalDate.getMonth()] + " del " + finalDate.getFullYear();
+            let period = "de intervalo de meses."
+            let interval = monthNames[initDate.getMonth()]+ " del " + initDate.getFullYear()
+                         + " - " + monthNames[finalDate.getMonth()] + " del " + finalDate.getFullYear();
 
             let ejs_options = {
                 logoPath: path.join('file://',__dirname,'..','public','logo2.png'),
+                logoQR: path.join('file://',__dirname,'..','public','SmartGrid.png'),
                 y_production: production,
                 x_date: date_production,
                 production_sum: (production.reduce( (sum, currentValue) => sum + currentValue)).toFixed(3),
@@ -199,7 +205,9 @@ router.get('/months/download/:initDate/:finalDate', (req, res) => {
                 current: false,
                 apparent_power: false,
                 active_power: false,
-                frequency: false
+                frequency: false,
+                module: folder,
+                interval: interval
             };
             
             utils.create_pdf_report(ejs_options,res);

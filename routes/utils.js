@@ -12,7 +12,7 @@ const create_pdf_report = (ejs_options, res) => {
             let options = {
                 "paginationOffset": 1,
                 "renderDelay": 2000,
-                "height": "1500px",
+                "height": "1700px",
                 "width": "1200px",
                 "border": {
                     "top": "2cm",            // default is 0, units: mm, cm, in, px
@@ -20,16 +20,8 @@ const create_pdf_report = (ejs_options, res) => {
                     "bottom": "2cm",
                     "left": "1.5cm"
                   }
-            };    
-            // console.log(data);
-            // pdf.create(data, options).toFile('./html-pdf.pdf', function (err, response) {
-            //     if (err) {
-            //     console.log(err);
-            //     } else {
-            //         console.log(response);      
-            //         res.send('ok');                         
-            //     }
-            // });      
+            };
+                
             pdf.create(data, options).toStream( function (err, stream) {
                 if (err) {
                     res.send(err);

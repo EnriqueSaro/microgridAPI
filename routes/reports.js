@@ -71,45 +71,89 @@ router.get("/:reportId", (req, res) => {
 
     let period;
     let interval;
-    let voltage,current,apparent_power, active_power, frequency;
+    let pr_length,mod;
+    let voltage,current,apparent_power, active_power, frequency, production_sum;
 
     switch (reportId) {
         case 0:
             reports =JSON.parse( fs.readFileSync(url+folder+'/day.json'));
-            production = reports.map( (report) => parseFloat((report.potencia_aparente * 60 / 1000).toFixed(3)) );
-            apparent_power = (production.reduce( (sum,currentValue) => sum + currentValue) / production.length).toFixed(3);
+            production = reports.map( (report) => parseFloat((report.potencia_aparente  / 60000).toFixed(7)) );
+            apparent_power = (production.reduce( (sum,currentValue) => sum + currentValue) / production.length).toFixed(7);
             voltage = (reports.map(report => report.voltaje)
                                    .reduce((sum,currentValue) => sum + currentValue) / reports.length).toFixed(3);
             current = (reports.map(report => report.corriente)
-                                   .reduce((sum,currentValue) => sum + currentValue) / reports.length).toFixed(3);
+                                   .reduce((sum,currentValue) => sum + currentValue) / reports.length);
             active_power = (reports.map(report => report.potencia_activa)
                                    .reduce((sum,currentValue) => sum + currentValue) / reports.length).toFixed(3);
             frequency = (reports.map(report => report.frecuencia)
                                 .reduce((sum,currentValue) => sum + currentValue) / reports.length).toFixed(3);
 
+            production_sum = (production.reduce( (sum, currentValue) => sum + currentValue)).toFixed(7);
             date_production =  reports.map( (report) => new Date(report.fecha).toLocaleString() );
             period = "Diario"
             interval = now;
+
+            pr_length = production.length;
+            console.log(pr_length);         
+            if ( pr_length > 360  && pr_length <= 720 )
+                mod = 2;
+            else if ( pr_length > 720  && pr_length <= 1080 )
+                mod = 3;
+            else if ( pr_length > 1080)
+                mod = 4;
+
+            if( mod ){
+                production = production.filter( (sample, index) => index % mod === 0);
+                date_production = date_production.filter( (sample, index) => index % mod === 0);
+            } 
+            console.log(production.length);         
             break;
         case 1:
             let yesterday_reports =JSON.parse( fs.readFileSync(url+folder+'/yesterday.json'));
             let today_reports =JSON.parse( fs.readFileSync(url+folder+'/day.json'));
             reports = [...yesterday_reports,...today_reports]; 
-            production = reports.map( (report) => parseFloat((report.potencia_aparente * 60 / 1000).toFixed(3)) );            
-            apparent_power = (production.reduce( (sum,currentValue) => sum + currentValue) / production.length).toFixed(3);
+            production = reports.map( (report) => parseFloat((report.potencia_aparente / 60000).toFixed(7)) );            
+            apparent_power = (production.reduce( (sum,currentValue) => sum + currentValue) / production.length).toFixed(7);
             voltage = (reports.map(report => report.voltaje)
                                    .reduce((sum,currentValue) => sum + currentValue) / reports.length).toFixed(3);
             current = (reports.map(report => report.corriente)
-                                   .reduce((sum,currentValue) => sum + currentValue) / reports.length).toFixed(3);
+                                   .reduce((sum,currentValue) => sum + currentValue) / reports.length);
             active_power = (reports.map(report => report.potencia_activa)
                                    .reduce((sum,currentValue) => sum + currentValue) / reports.length).toFixed(3);
             frequency = (reports.map(report => report.frecuencia)
                                .reduce((sum,currentValue) => sum + currentValue) / reports.length).toFixed(3);
             date_production =  reports.map( (report) => new Date(report.fecha).toLocaleString() );
+
+            production_sum = (production.reduce( (sum, currentValue) => sum + currentValue)).toFixed(7);
+
             nowDate.setDate(nowDate.getDate() - 1);
             let yesterday = nowDate.getFullYear()+'/'+(nowDate.getMonth()+1)+'/'+nowDate.getDate();
             period = "Ayer y Hoy"
             interval = yesterday + " - " + now;
+
+
+            pr_length = production.length;  
+            console.log(pr_length);         
+            if ( pr_length > 360  && pr_length <= 720 )
+                mod = 2;
+            else if ( pr_length > 720  && pr_length <= 1080 )
+                mod = 3;
+            else if ( pr_length > 1080 && pr_length <= 1440)
+                mod = 4;
+            else if ( pr_length > 1440 && pr_length <= 1800)
+                mod = 5;
+            else if ( pr_length > 1800 && pr_length <= 2160)
+                mod = 6;
+            else if ( pr_length > 2160 && pr_length <= 2520)
+                mod = 7;
+            else if ( pr_length > 2520)
+                mod = 8;
+
+            if( mod ){
+                production = production.filter( (sample, index) => index % mod === 0);
+                date_production = date_production.filter( (sample, index) => index % mod === 0);
+            } 
+            console.log(production.length);         
             break;
         case 2:
             let month_reports =JSON.parse( fs.readFileSync(url+folder+'/month.json'));
@@ -119,6 +163,7 @@ router.get("/:reportId", (req, res) => {
             reports = month_reports.filter( (report) => new Date(report.fecha) >= nowDate);
             production = reports.map((report) => report.produccion );
             date_production =  reports.map( (report) => new Date(report.fecha).toLocaleDateString() );
+            production_sum = (production.reduce( (sum, currentValue) => sum + currentValue)).toFixed(5);
             
             let lastweek = nowDate.getFullYear()+'/'+(nowDate.getMonth()+1)+'/'+nowDate.getDate();
             period = "Semanal"
@@ -128,6 +173,7 @@ router.get("/:reportId", (req, res) => {
             reports =JSON.parse( fs.readFileSync(url+folder+'/month.json'));
             production = reports.map((report) => report.produccion );
             date_production =  reports.map( (report) => new Date(report.fecha).toLocaleDateString() );
+            production_sum = (production.reduce( (sum, currentValue) => sum + currentValue)).toFixed(5);
 
             let begin_day = new Date(reports[0].fecha);
             let day = begin_day.getFullYear()+'/'+(begin_day.getMonth()+1)+'/' + begin_day.getDate();
@@ -138,6 +184,7 @@ router.get("/:reportId", (req, res) => {
             reports =JSON.parse( fs.readFileSync(url+folder+'/year.json'));
             production = reports.map((report) => report.produccion );
             date_production =  reports.map( (report) => new Date(report.fecha).toLocaleDateString() );
+            production_sum = (production.reduce( (sum, currentValue) => sum + currentValue)).toFixed(5);
 
             let begin_moth = new Date(reports[0].fecha);
             let month = begin_moth.getFullYear()+'/'+(begin_moth.getMonth()+1)+'/01';
@@ -148,6 +195,7 @@ router.get("/:reportId", (req, res) => {
             reports =JSON.parse( fs.readFileSync(url+folder+'/decada.json'));
             production = reports.map((report) => report.produccion );
             date_production =  reports.map( (report) => new Date(report.fecha).toLocaleDateString() );
+            production_sum = (production.reduce( (sum, currentValue) => sum + currentValue)).toFixed(5);
 
             let begin_year = new Date(reports[0].fecha);
             let final_year = new Date(reports[reports.length -1].fecha);
@@ -163,10 +211,10 @@ router.get("/:reportId", (req, res) => {
         logoQR: path.join('file://',__dirname,'..','public','SmartGrid.png'),
         y_production: production,
         x_date: date_production,
-        production_sum: (production.reduce( (sum, currentValue) => sum + currentValue)).toFixed(3),
+        production_sum: production_sum,
         period: period,
         voltage: voltage || false,
-        current: current || false,
+        current: (current * 1000).toFixed(4) || false,
         apparent_power: apparent_power || false,
         active_power: active_power || false,
         frequency: frequency || false,
