@@ -70,6 +70,7 @@ router.get("/:reportId", (req, res) => {
     let now = nowDate.getFullYear()+'/'+(nowDate.getMonth()+1)+'/'+nowDate.getDate();
 
     let period;
+    let interval;
     let voltage,current,apparent_power, active_power, frequency;
 
     switch (reportId) {
@@ -87,7 +88,8 @@ router.get("/:reportId", (req, res) => {
                                 .reduce((sum,currentValue) => sum + currentValue) / reports.length).toFixed(3);
 
             date_production =  reports.map( (report) => new Date(report.fecha).toLocaleString() );
-            period = "del día: " + now;
+            period = "Diario"
+            interval = now;
             break;
         case 1:
             let yesterday_reports =JSON.parse( fs.readFileSync(url+folder+'/yesterday.json'));
@@ -106,7 +108,8 @@ router.get("/:reportId", (req, res) => {
             date_production =  reports.map( (report) => new Date(report.fecha).toLocaleString() );
             nowDate.setDate(nowDate.getDate() - 1);
             let yesterday = nowDate.getFullYear()+'/'+(nowDate.getMonth()+1)+'/'+nowDate.getDate();
-            period = "de los días: " + yesterday + " y " + now;
+            period = "Ayer y Hoy"
+            interval = yesterday + " - " + now;
             break;
         case 2:
             let month_reports =JSON.parse( fs.readFileSync(url+folder+'/month.json'));
@@ -118,7 +121,8 @@ router.get("/:reportId", (req, res) => {
             date_production =  reports.map( (report) => new Date(report.fecha).toLocaleDateString() );
             
             let lastweek = nowDate.getFullYear()+'/'+(nowDate.getMonth()+1)+'/'+nowDate.getDate();
-            period = "de la semana: " + lastweek + " a " + now;
+            period = "Semanal"
+            interval = lastweek + " - " + now;
             break;
         case 3:
             reports =JSON.parse( fs.readFileSync(url+folder+'/month.json'));
@@ -127,7 +131,8 @@ router.get("/:reportId", (req, res) => {
 
             let begin_day = new Date(reports[0].fecha);
             let day = begin_day.getFullYear()+'/'+(begin_day.getMonth()+1)+'/' + begin_day.getDate();
-            period = "del mes: " + day + " a " + now;
+            period = "Mensual" 
+            interval = day + " - " + now;
             break;
         case 4:
             reports =JSON.parse( fs.readFileSync(url+folder+'/year.json'));
@@ -136,7 +141,8 @@ router.get("/:reportId", (req, res) => {
 
             let begin_moth = new Date(reports[0].fecha);
             let month = begin_moth.getFullYear()+'/'+(begin_moth.getMonth()+1)+'/01';
-            period = "del año: " + month + " a " + now;
+            period = "Anual"
+            interval = month + " - " + now;
             break; 
         case 5:
             reports =JSON.parse( fs.readFileSync(url+folder+'/decada.json'));
@@ -147,12 +153,14 @@ router.get("/:reportId", (req, res) => {
             let final_year = new Date(reports[reports.length -1].fecha);
             let year = begin_year.getFullYear()+'/01/01';
             let end_year = final_year.getFullYear()+'/01/01';
-            period = "del año: " + year + " a " + end_year;
+            period = "Decada"
+            interval = year + " - " + end_year;
             break;        
     }
     
     let ejs_options = {
         logoPath: path.join('file://',__dirname,'..','public','logo2.png'),
+        logoQR: path.join('file://',__dirname,'..','public','SmartGrid.png'),
         y_production: production,
         x_date: date_production,
         production_sum: (production.reduce( (sum, currentValue) => sum + currentValue)).toFixed(3),
@@ -161,7 +169,9 @@ router.get("/:reportId", (req, res) => {
         current: current || false,
         apparent_power: apparent_power || false,
         active_power: active_power || false,
-        frequency: frequency || false
+        frequency: frequency || false,
+        module: folder,
+        interval: interval
     };   
 
     utils.create_pdf_report(ejs_options,res);

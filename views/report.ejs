@@ -15,7 +15,17 @@
 <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
 
 <style>
-  .reportGraph {width:1050px}
+  @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap');
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  .reportGraph {
+    width:1050px;
+  }
   .container2 {
     width: 970px !important;
 }
@@ -220,24 +230,122 @@ body.mobile-nav-active #mobile-nav {
     white-space: nowrap;
 }
 
+/* Cards with info */
+.container_info{
+  background-color: #f1f1f1;
+  width: 80%;
+  border-radius: 1rem;
+  color: #393e46;
+  padding: 1rem;
+  font-family: 'Lato', sans-serif;
+  margin-bottom: 1.5rem;
+}
 
+/* Card Graphs */
+.container_graph{
+  border: 0.1rem solid rgb(216, 216, 216);
+  border-radius: 1rem;
+  margin-bottom: 2rem;
+}
 
+/* Header Graph */
+.header_graph{
+  border-top-right-radius: 1rem;
+  border-top-left-radius: 1rem;
+  background-color: #0E9577;
+  color: white;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.graph{
+  margin: 0.5rem 1rem;
+}
+
+.container_params {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  width: 1050px;
+}
+
+.container_params > div {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+  flex: 1;
+  padding: 1rem;
+  border: 0.15rem solid rgb(233, 233, 233);
+  border-radius: 1rem;
+  margin-left: 3rem;
+  margin-bottom: 1.5rem;
+}
+
+.card_params{
+  padding: 1rem 1rem 0 1rem;
+  color: #393e46;
+}
+
+.card_title{
+  font-size: 1rem;
+  font-weight: bold;
+  text-transform: capitalize;
+  font-family: 'Lato', sans-serif;
+}
+
+.description{
+  margin: 1rem 0;
+  font-size: 1.1rem;
+}
+
+.icon_parameter {
+  display: inline-flex;
+  border-radius: 50%;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  height: 3rem;
+  width: 3rem;
+  background-color: #54C8A1;
+}
+
+.icon_parameter i{
+  font-size: 1.25rem;
+}
+
+.image_qr{
+  width: 10rem;
+  height: 10rem;
+}
+
+.container_qr{
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  flex-direction: column;
+  width: 1050px;
+  padding: 0 0 1.5rem 0;
+}
+
+.container_qr > div {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+  flex: 1;
+}
 
 </style>
 </head>
 <body>
   <header id="header">
     <div class="container2">
-  
       <div id="logo" class="pull-left">
         <h1><img src="<%= logoPath %>" alt="" title="" width="50px" /> <a href="#intro" class="scrollto">SMARTGRID</a>
         </h1>
-        <!-- Uncomment below if you prefer to use an image logo -->
       </div>
-  
-      <div class="pull-right">
+
+      <!-- <div class="pull-right">
         <h5>Reporte <%= period %></h5>
-      </div>
+      </div> -->
     </div>
   </header>
   <br>
@@ -246,130 +354,97 @@ body.mobile-nav-active #mobile-nav {
   <br>
   <br>
   <div id="wrapper p-10">
-  
-    <!-- Area Chart -->
-    Prueba de generación de PDF con gráficas de microGrid
-    <!-- Area Chart -->
-    <!-- <div class="reportGraph">
-      <div class="card shadow mb-4">
-        <!-- Card Header - Dropdown -->
-        <!-- <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-          <h6 class="m-0 font-weight-bold text-primary">Historial de producción</h6>
-        </div> --> -->
-        <!-- Card Body -->
-        <!-- <div class="card-body"> -->
-          <div class="reportGraph">
-            <canvas id="myChart"></canvas>
-          </div>
-        <!-- </div> -->
-      <!-- </div>
-    </div> -->
-  
-  
-    <h4>Promedio de parámetros de la microrred eléctrica del periodo correspondiente <%= period %> : </h4>
-    <br>
-    <div class="reportGraph">
-      <div class="card shadow mb-12">
-        <!-- Earnings (Monthly) Card Example -->
-        <% if (voltage) { %>
-          <div class="card border-left-primary shadow h-100 py-2 pull-left" style="width: 300px;">
-            <div class="card-body">
-              <div class="row no-gutters align-items-center">
-                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                  Voltaje</div>
-                <div class="pull-right">
-                  <i class="fad fa-battery-bolt fa-2x " style="color: #f6c23e;"></i>
-                </div>
-                <br>
-                <div class="h5 mb-0 font-weight-bold text-gray-800"><%= voltage %> V</div>
-              </div>
-            </div>
-          </div>
-        <% } %>
-        <% if (voltage) { %>
-          <div class="card border-left-success shadow h-100 py-2 pull-right" style="width: 300px;">
-            <div class="card-body">
-              <div class="row no-gutters align-items-center">
-                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                  Corriente</div>
-                <div class="pull-right">
-                  <i class="fad fa-battery-bolt fa-2x text-gray-300"></i>
-                </div>
-                <br>
-                <div class="h5 mb-0 font-weight-bold text-gray-800"> <%= current %>  A </div>
-              </div>
-            </div>
-          </div>
-        <% } %>
-        <!-- Earnings (Monthly) Card Example -->
-        <div class="card border-left-warning shadow h-100 py-2  mx-auto" style="width: 300px;">
-          <div class="card-body">
-            <div class="row no-gutters align-items-center">
-              <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                Producción total</div>
-              <div class="pull-right">
-                <i class="fas fa-wave-sine  fa-2x text-gray-300"></i>
-              </div>
-              <br>
-              <div class="h5 mb-0 font-weight-bold text-gray-800"> <%= production_sum %> KVA / H</div>
-            </div>
-          </div>
-        </div>
     
-      </div>    
+    <!-- Encabezado sobre el modulo -->
+    <div class = "container_info">
+      <p style="font-weight: bold; text-transform: uppercase;">Información reporte <%= period%></p>
+      <p>Periodo: <%= interval%></p>
+      <p>Identificador del sensor: <%= module%></p>
+      <p>Código de acceso: xxxxxxxxxxxx</p>
     </div>
-    <% if (apparent_power) { %>
-      <div class="reportGraph">
-        <div class="card shadow mb-12">
-          <!-- Earnings (Monthly) Card Example -->
-          <div class="card border-left-primary shadow h-100 py-2 pull-left" style="width: 300px;">
-            <div class="card-body">
-              <div class="row no-gutters align-items-center">
-                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                  Potencia aparente</div>
-                <div class="pull-right">
-                  <i class="fad fa-battery-bolt fa-2x " style="color: #f6c23e;"></i>
-                </div>
-                <br>
-                <div class="h5 mb-0 font-weight-bold text-gray-800"><%= apparent_power %> KVA / H</div>
-              </div>
-            </div>
-          </div>
-      
-          <div class="card border-left-success shadow h-100 py-2 pull-right" style="width: 300px;">
-            <div class="card-body">
-              <div class="row no-gutters align-items-center">
-                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                  Potencia activa</div>
-                <div class="pull-right">
-                  <i class="fad fa-battery-bolt fa-2x text-gray-300"></i>
-                </div>
-                <br>
-                <div class="h5 mb-0 font-weight-bold text-gray-800"> <%= active_power %>  KVA / H </div>
-              </div>
-            </div>
-          </div>
-          <!-- Earnings (Monthly) Card Example -->
-          <div class="card border-left-warning shadow h-100 py-2  mx-auto" style="width: 300px;">
-            <div class="card-body">
-              <div class="row no-gutters align-items-center">
-                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                  Frecuencia</div>
-                <div class="pull-right">
-                  <i class="fas fa-wave-sine  fa-2x text-gray-300"></i>
-                </div>
-                <br>
-                <div class="h5 mb-0 font-weight-bold text-gray-800"> <%= frequency %> Hz</div>
-              </div>
-            </div>
-          </div>
-      
-        </div>    
-      </div>
-    <% } %>
 
+    <!-- Area Chart -->
+    <div class = "container_graph">
+      <div class = "header_graph">
+        Este gráfico muestra la potencia generada (KVAH) en el lapso de tiempo especificado
+      </div>
+      <div class="reportGraph">
+        <canvas id="myChart" class="graph"></canvas>
+      </div>
+    </div>
+
+    <div class = "container_graph">
+      <div class = "header_graph">
+        Promedios de los parámetros medidos en el lapso de tiempo especificado
+      </div>
+      
+      <div class="container_params">
+        <% if (voltage) { %>
+          <div class="card_params">
+            <div class="icon_parameter text-white pull-right" style="padding: 0.8rem 0.2rem;">
+              <i class="fas fa-battery-bolt"></i>
+            </div>
+            <h1 class = "card_title">Voltaje</h1>
+            <p class = "description"><%= voltage %> V</p>
+          </div>
+
+          <div class="card_params">
+            <div class="icon_parameter text-white pull-right" style="padding: 0.8rem 0.2rem;">
+              <i class="fas fa-plug"></i>
+            </div>
+            <h1 class = "card_title">Corriente</h1>
+            <p class = "description"><%= current %> A</p>
+          </div>
+        <% } %>
+
+        <div class="card_params">
+          <div class="icon_parameter text-white pull-right" style="padding: 0.8rem 00.2rem;">
+            <i class="fas fa-bolt"></i>
+          </div>
+          <h1 class = "card_title">Producción total</h1>
+          <p class = "description"><%= production_sum %> KVAH</p>
+        </div>
+      </div>
+
+      <% if (apparent_power) { %>
+        <div class="container_params">
+          <div class="card_params">
+            <div class="icon_parameter text-white pull-right" style="padding: 0.8rem 0.2rem;">
+              <i class="fas fa-battery-bolt"></i>
+            </div>
+            <h1 class = "card_title">Potencia aparente</h1>
+            <p class = "description"><%= apparent_power %> KVA</p>
+          </div>
+
+          <div class="card_params">
+            <div class="icon_parameter text-white pull-right" style="padding: 0.8rem 0.2rem;">
+              <i class="fas fa-wave-sine"></i>
+            </div>
+            <h1 class = "card_title">Frecuencia</h1>
+            <p class = "description"><%= frequency %> Hz</p>
+          </div>
+
+          <div class="card_params">
+            <div class="icon_parameter text-white pull-right" style="padding: 0.8rem 0.2rem;">
+              <i class="fas fa-bolt"></i>
+            </div>
+            <h1 class = "card_title">Potencia activa</h1>
+            <p class = "description"><%= active_power %> KW</p>
+          </div>
+
+        </div>
+      <% } %>    
+    </div>
   </div>
-    <script type="text/javascript">
+
+  <footer style="position: fixed; bottom: 0px;">
+      <img src="<%= logoQR %>" alt="" class="image_qr" />
+      <div style="width: 50%; color: #393e46;">
+        Conoce más sobre este proyecto escaneando el código QR
+      </div>
+  </footer>
+
+  <script type="text/javascript">
 	'use strict';
 	(function(setLineDash) {
 		CanvasRenderingContext2D.prototype.setLineDash = function() {
@@ -434,7 +509,21 @@ body.mobile-nav-active #mobile-nav {
 					intersect: false,
 					mode: 'index',
 					caretPadding: 10
-				}
+				},
+        scales: {
+          yAxes: [{
+            scaleLabel: {
+              display: true,
+              labelString: 'KVAH'
+            }
+          }],
+          xAxes: [{
+            scaleLabel: {
+              display: true,
+              labelString: 'Tiempo'
+            }
+          }],
+        }
 			}
 		});
 	}
