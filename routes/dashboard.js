@@ -38,17 +38,94 @@ router.get("/", (req,res) => {
             return !is_in_range;
         });
     }
-    console.log('inicio: ' + samples.length);
 
-    if (samples.length > 1440){
-        let index_needed = samples.length - 1440;
-        samples = samples.slice(index_needed);
-    }
-    console.log('fin: ' + samples.length);
-
+    //obtain last sample
     let last_sample = samples[samples.length -1];
-    //Reverse samples because of the frontend need
-    let reverse_samples = samples.reverse();
+
+    console.log('inicio: ' + samples.length);    
+
+    let day_date = ( day_samples.length === 0 ) ? false : new Date(day_samples[0].fecha);
+    let yesterday_date = ( yesterday_samples.length === 0 ) ? false : new Date(yesterday_samples[0].fecha);
+
+    let candles_samples = [];
+
+    if (yesterday_date) {
+
+        for (let hour = 0; hour < 24; hour++) {
+
+            let hour_samples = [];
+            for (const yesterday_sample of samples) {
+
+                let sample_date = new Date(yesterday_sample.fecha);
+                if (yesterday_date.getDate() !== sample_date.getDate())
+                    continue;
+
+                if (sample_date.getHours() === hour)
+                    hour_samples.push(yesterday_sample);
+            }
+            //CHECK THIS NUMBER, WHY 4?
+            if (hour_samples.length >= 4) {
+                yesterday_date.setHours(hour, 0, 0, 0);
+                hour_samples = hour_samples.map(sample => parseFloat((sample['potencia_aparente'] / 60000).toFixed(7)));
+                candles_samples.push({
+                    date: yesterday_date.toISOString(),
+                    data: hour_samples
+                });
+            }
+        }
+    }
+    if (day_date) {
+
+        for (let hour = 0; hour < 24; hour++) {
+
+            let hour_samples = [];
+            for (const day_sample of samples) {
+
+                let sample_date = new Date(day_sample.fecha);
+                if (day_date.getDate() !== sample_date.getDate())
+                    continue;
+
+                if (sample_date.getHours() === hour)
+                    hour_samples.push(day_sample);
+            }
+            //CHECK THIS NUMBER, WHY 4?
+            if (hour_samples.length >= 4) {
+                day_date.setHours(hour, 0, 0, 0);
+                hour_samples = hour_samples.map(sample => parseFloat((sample['potencia_aparente'] / 60000).toFixed(7)));
+                candles_samples.push({
+                    date: day_date.toISOString(),
+                    data: hour_samples
+                });
+            }
+        }
+    }
+
+    //Give candles apropiate structure
+    let final_candles = [];
+    let current_open;
+    candles_samples.forEach( candle => {       
+     
+        let close = candle.data[candle.data.length -1];
+
+        final_candles.push({
+            x: candle.date,
+            low: Math.min(...candle.data),
+            high: Math.max(...candle.data),
+            open: ( current_open ) ?  current_open : candle.data[0],
+            close: close
+        });
+
+        current_open = close;
+        
+    });
+    console.log('candles: ' + final_candles.length);
+    
+    //keep only 24 candles
+    if (final_candles.length > 24){
+        let index_needed = final_candles.length - 24;
+        final_candles = final_candles.slice(index_needed);
+    }
+    console.log('candles: ' + final_candles.length);
 
     let data = {
         voltage:  parseFloat(last_sample['voltaje'].toFixed(3)),
@@ -58,16 +135,11 @@ router.get("/", (req,res) => {
         activePower:  parseFloat(last_sample['potencia_activa'].toFixed(3)),
         powerFactor:  parseFloat(last_sample['factor_potencia'].toFixed(3)),
         frequency:  parseFloat(last_sample['frecuencia'].toFixed(3)),
-        quadrant: last_sample['cudrante'],
+        quadrant: last_sample['cuadrante'],
     }
 
     if(showAllData){
-        data.productionData = reverse_samples.map( function(sample) {
-            return {
-                date: sample['fecha'],
-                value: parseFloat((sample['potencia_aparente'] / 60000).toFixed(7))
-            }            
-        });
+        data.productionData = final_candles;
         res.status(200).json(data);
     }else{
         res.status(200).json(data);
