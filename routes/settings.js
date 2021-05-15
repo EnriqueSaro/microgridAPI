@@ -52,12 +52,12 @@ router.post('/range', (req,res) => {
       if(err){
           res.status(400).send('Something went wrong');
       }else{
-          res.status(200).send('Range added');
+          res.status(200).send({accept: true});
       }
     });
 
   }else{
-    res.status(404).send("Ranges are not valid or already exists");
+    res.status(200).send({accept: false});
   }
 
 });

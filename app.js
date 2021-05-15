@@ -45,11 +45,11 @@ app.post('/login', function(req,res) {
         let device_index = devices.findIndex( device => device.token === device_token);
 
         if(device_index > -1){
-            devices[device_index].module_id = folder;
+            devices[device_index].module_id = folder[0].module_id;
         }else{
             devices.push({
                 token: device_token,
-                module_id: folder
+                module_id: folder[0].module_id
             });
         }
         fs.writeFileSync(url  +'/devices.json', JSON.stringify(devices, null, '\t'));
