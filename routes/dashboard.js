@@ -6,8 +6,8 @@ const router = Router();
 
 router.get("/", (req,res) => {
     
-    const showAllData = (req.query.data === 'true') ? true : false;
-    console.log(showAllData);
+    const showLinearData = (req.query.data === 'lineal') ? true : false;
+    console.log(showLinearData);
     
     const token = req.headers['x-request-id'];
     const url = process.env.SAMPLES_URL;
@@ -41,14 +41,14 @@ router.get("/", (req,res) => {
 
     //obtain last sample
     let last_sample = samples[samples.length -1];
-
+    
     console.log('inicio: ' + samples.length);    
 
     let day_date = ( day_samples.length === 0 ) ? false : new Date(day_samples[0].fecha);
     let yesterday_date = ( yesterday_samples.length === 0 ) ? false : new Date(yesterday_samples[0].fecha);
 
     let candles_samples = [];
-
+    let lineal = [];    
     if (yesterday_date) {
 
         for (let hour = 0; hour < 24; hour++) {
@@ -59,21 +59,31 @@ router.get("/", (req,res) => {
                 let sample_date = new Date(yesterday_sample.fecha);
                 if (yesterday_date.getDate() !== sample_date.getDate())
                     continue;
-
+                                    
                 if (sample_date.getHours() === hour)
                     hour_samples.push(yesterday_sample);
+                
+                    
             }
+            yesterday_date.setHours(hour, 0, 0, 0);
+            hour_samples = hour_samples.map(sample => parseFloat((sample['potencia_aparente'] / 60000).toFixed(7)));
             //CHECK THIS NUMBER, WHY 4?
             if (hour_samples.length >= 4) {
-                yesterday_date.setHours(hour, 0, 0, 0);
-                hour_samples = hour_samples.map(sample => parseFloat((sample['potencia_aparente'] / 60000).toFixed(7)));
                 candles_samples.push({
                     date: yesterday_date.toISOString(),
                     data: hour_samples
                 });
             }
+            if(hour_samples.length > 0){
+                let y = parseFloat(hour_samples.reduce( (sum,currentValue) => sum + currentValue).toFixed(5) );
+                lineal.push({
+                    x: yesterday_date.toISOString(),
+                    y: y
+                });
+            }            
         }
     }
+
     if (day_date) {
 
         for (let hour = 0; hour < 24; hour++) {
@@ -84,22 +94,29 @@ router.get("/", (req,res) => {
                 let sample_date = new Date(day_sample.fecha);
                 if (day_date.getDate() !== sample_date.getDate())
                     continue;
-
+                
                 if (sample_date.getHours() === hour)
-                    hour_samples.push(day_sample);
+                    hour_samples.push(day_sample);                
             }
+
+            day_date.setHours(hour, 0, 0, 0);
+            hour_samples = hour_samples.map( sample => parseFloat((sample['potencia_aparente'] / 60000).toFixed(7) ) );
             //CHECK THIS NUMBER, WHY 4?
-            if (hour_samples.length >= 4) {
-                day_date.setHours(hour, 0, 0, 0);
-                hour_samples = hour_samples.map(sample => parseFloat((sample['potencia_aparente'] / 60000).toFixed(7)));
+            if (hour_samples.length >= 4) {                
                 candles_samples.push({
                     date: day_date.toISOString(),
                     data: hour_samples
                 });
             }
+            if(hour_samples.length > 0){
+                let y = parseFloat(hour_samples.reduce( (sum,currentValue) => sum + currentValue).toFixed(5) );
+                lineal.push({
+                    x: day_date.toISOString(),
+                    y: y
+                });
+            }   
         }
     }
-
     //Give candles apropiate structure
     let final_candles = [];
     let current_open;
@@ -118,14 +135,19 @@ router.get("/", (req,res) => {
         current_open = close;
         
     });
-    console.log('candles: ' + final_candles.length);
+    console.log('candles: ' + final_candles.length + ' Inicio lineal: ' + lineal.length);
     
     //keep only 24 candles
     if (final_candles.length > 24){
         let index_needed = final_candles.length - 24;
         final_candles = final_candles.slice(index_needed);
     }
-    console.log('candles: ' + final_candles.length);
+    //keep only 24 lineal samples
+    if(lineal.length > 24){
+        let index_needed = lineal.length - 24;
+        lineal = lineal.slice(index_needed);
+    }
+    console.log('candles: ' + final_candles.length  + ' Final lineal: ' + lineal.length);
 
     let data = {
         voltage:  parseFloat(last_sample['voltaje'].toFixed(3)),
@@ -138,10 +160,11 @@ router.get("/", (req,res) => {
         quadrant: last_sample['cuadrante'],
     }
 
-    if(showAllData){
-        data.productionData = final_candles;
+    if(showLinearData){
+        data.productionData = lineal;
         res.status(200).json(data);
     }else{
+        data.productionData = final_candles;
         res.status(200).json(data);
     }
             

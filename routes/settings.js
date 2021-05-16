@@ -33,7 +33,7 @@ router.post('/range', (req,res) => {
   let index = nodes.findIndex(node => node.token === token);
   let ranges =  nodes[index].ranges;
 
-  let values_valid = (init >= 0 && init <= 23) && (final >= 0 && final <= 23);  
+  let values_valid = (init >= 0 && init <= 23) && (final >= 0 && final <= 24);  
   let ranges_exists = ranges.find( range => range.init === init && range.final === final);
 
   if ( values_valid && !ranges_exists ){
