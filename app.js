@@ -6,7 +6,6 @@ require('dotenv').config();
 
 /*Importación de modulos (Propios o Externos)*/
 
-const bodyParser = require("body-parser"); //Importamos la libreria Body Parser para leer parametros
 const express = require("express"); //Importamos el middleware de express.js (node_modules)
 const fs = require("fs");  //Importamos file system para leer archivos
 const app = express(); //Indicamos que nuestra app funcionara bajo Express
@@ -18,9 +17,8 @@ app.set('view engine', 'ejs');
 //se definen recursos estáticos
 app.use("/public", express.static(__dirname + "/public/"));
 //Se declara que la App podra extraer parametros
-app.use(bodyParser.json({limit:'100kb'})) //Formato JSON
-app.use(bodyParser.json({parameterLimit:'1000' })) //Formato JSON
-app.use(bodyParser.urlencoded({extended: true}))//Encoded
+app.use(express.json()) //Limits request body by default to 100kb and  parses incoming requests with JSON payloads
+app.use(express.urlencoded({extended: true}))//Encoded
 
  //to convert html to pdf
 //app.use(session({secret: "f156e7995d521f30e6c59a3d6c75e1e5"})); //Palabra secreta para sesiones

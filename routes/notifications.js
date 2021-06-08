@@ -18,7 +18,7 @@ router.get("/", (req, res) => {
     if (notifications.length === 0)
         res.status(404).send("There are no notifications yet")
     else
-        res.status(200).json(notifications);
+        res.status(200).json(notifications.reverse());
     
 });
 

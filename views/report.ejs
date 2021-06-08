@@ -333,6 +333,8 @@ body.mobile-nav-active #mobile-nav {
   flex: 1;
 }
 
+
+
 </style>
 </head>
 <body>
@@ -367,6 +369,39 @@ body.mobile-nav-active #mobile-nav {
     <div class = "container_graph">
       <div class = "header_graph">
         Este gráfico muestra la potencia generada (KVAH) en el lapso de tiempo especificado
+      </div>
+      <div style="text-align:center">
+        
+        <span  style="background-color: #f94a4a;
+        height: 30px;
+        margin: 2px;
+        width: 30px;
+        border-radius: 50%;
+        display: inline-block;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        &lt;25%  &nbsp;&nbsp;     
+        <span  style="background-color: #f9e44a;
+        height: 30px;
+        margin: 2px;
+        width: 30px;
+        border-radius: 50%;
+        display: inline-block;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        25%-50%  &nbsp;&nbsp;
+        <span  style="background-color: #51d147;
+        height: 30px;
+        margin: 2px;
+        width: 30px;
+        border-radius: 50%;
+        display: inline-block;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        &gt;50%  &nbsp;&nbsp;
+        <span  style="background-color: #4ae9f9;
+        height: 30px;
+        margin: 2px;
+        width: 30px;
+        border-radius: 50%;
+        display: inline-block;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        Valor máximo &nbsp;&nbsp;
+        
+        
       </div>
       <div class="reportGraph">
         <canvas id="myChart" class="graph"></canvas>
@@ -462,53 +497,38 @@ body.mobile-nav-active #mobile-nav {
 		};
 	};
 	function drawGraphs() {
-        new Chart(document.getElementById('myChart'), {
+      var myChart = new Chart(document.getElementById('myChart'), {
             "responsive": false,
-            "type":"line",
+            "type":"bar",
 			data: {
 				labels: <%-   JSON.stringify(Array.from(x_date)) %>,
 				datasets: [{
-					label: 'Producción de energía',
-					//
-					lineTension: 0.1,
+          label: '<25%',
+          borderWidth: 1,					//
 				  //backgroundColor: "rgba(78, 115, 223, 0.05)",
-          backgroundColor: "rgba(54, 162, 235,0.2)",
+          backgroundColor: <%-   JSON.stringify(Array.from(colors_bars)) %>,
 					//borderColor: "rgba(78, 115, 223, 1)",
-          borderColor: "rgba(54, 162, 235,1)",
-					pointRadius: 3,
-					pointBackgroundColor: "rgba(78, 115, 223, 1)",
-					pointBorderColor: "rgba(78, 115, 223, 1)",
-					pointHoverRadius: 3,
-					pointStyle: 'line',
-					pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
-					pointHoverBorderColor: "rgba(78, 115, 223, 1)",
-					pointHitRadius: 10,
-					pointBorderWidth: 2,
-					data: <%=  JSON.stringify(y_production) %>,
-					fill: 'start',
-					//backgroundColor: Color(presets.blue).alpha(0.5).rgbString()
-					//backgroundColor:'green',
-
+					data: <%=  JSON.stringify(y_production) %>
 				}]
 			},
 			options: {
 				legend: {
-					display: true
+					display: false
 				},
 				tooltips: {
-					backgroundColor: "rgb(255,255,255)",
-					bodyFontColor: "#858796",
-					titleMarginBottom: 10,
-					titleFontColor: '#6e707e',
-					titleFontSize: 14,
-					borderColor: '#dddfeb',
-					borderWidth: 1,
-					xPadding: 15,
-					yPadding: 15,
-					displayColors: true,
-					intersect: false,
-					mode: 'index',
-					caretPadding: 10
+				// 	backgroundColor: "rgb(255,255,255)",
+				// 	bodyFontColor: "#858796",
+				// 	titleMarginBottom: 10,
+				// 	titleFontColor: '#6e707e',
+				// 	titleFontSize: 14,
+				// 	borderColor: '#dddfeb',
+				// 	borderWidth: 1,
+				// 	xPadding: 15,
+				// 	yPadding: 15,
+				displayColors: true,
+				intersect: true,
+				mode: 'dataset',
+				// 	caretPadding: 10
 				},
         scales: {
           yAxes: [{
